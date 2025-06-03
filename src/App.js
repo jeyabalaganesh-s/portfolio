@@ -1,10 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "./components/ui/button";
-import { Github, Mail, Globe } from "lucide-react";
 import profilePic from "./assets/profile.jpg";
 import "./styles/global.css";
 import Typewriter from "typewriter-effect";
+import { Mail, Github, Globe, Linkedin, Instagram } from "lucide-react";
+
 
 const fadeIn = (delay = 0) => ({
   hidden: { opacity: 0, y: 40 },
@@ -189,6 +190,110 @@ export default function Portfolio() {
         </div>
       </section>
 
+      {/* Publications & Certifications */}
+<section id="publications-certifications" className="bg-purple-950/20 py-12 sm:py-16 px-6 sm:px-8">
+  <div className="max-w-4xl mx-auto">
+    {/* Publications */}
+    <motion.h3
+      className="text-2xl sm:text-3xl font-bold text-purple-300 mb-8"
+      variants={fadeIn()}
+      initial="hidden"
+      whileInView="visible"
+    >
+      Publications
+    </motion.h3>
+    <div className="space-y-6 mb-12">
+      <motion.div
+        className="rounded-2xl bg-white/10 backdrop-blur-md p-5 sm:p-6 border border-purple-700 hover:scale-[1.05] transition shadow-xl"
+        variants={fadeIn(0.1)}
+        initial="hidden"
+        whileInView="visible"
+      >
+        <h4 className="text-lg sm:text-xl font-bold text-white mb-2">
+          Websence AI: Enhancing Website Evaluation with Opinion Mining and Generative AI
+        </h4>
+        <a
+          href="https://ijsrem.com/download/websense-ai-enhancing-website-evaluation-with-opinion-mining-and-generative-ai/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-purple-400 hover:underline text-sm sm:text-base"
+        >
+          Read Journal
+        </a>
+      </motion.div>
+
+      <motion.div
+        className="rounded-2xl bg-white/10 backdrop-blur-md p-5 sm:p-6 border border-purple-700 hover:scale-[1.05] transition shadow-xl"
+        variants={fadeIn(0.2)}
+        initial="hidden"
+        whileInView="visible"
+      >
+        <h4 className="text-lg sm:text-xl font-bold text-white mb-2">
+          Develop an Online Cloth Retail Webpage using HTML, CSS, JavaScript, PHP, and MySQL
+        </h4>
+        <a
+          href="https://ijsrem.com/download/develop-an-online-cloth-retail-webpage-using-html-css-javascript-php-and-mysql/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-purple-400 hover:underline text-sm sm:text-base"
+        >
+          Read Journal
+        </a>
+      </motion.div>
+    </div>
+
+    {/* Certifications */}
+    <motion.h3
+      className="text-2xl sm:text-3xl font-bold text-purple-300 mb-8"
+      variants={fadeIn()}
+      initial="hidden"
+      whileInView="visible"
+    >
+      Certifications
+    </motion.h3>
+    <div className="space-y-6">
+      <motion.div
+        className="rounded-2xl bg-white/10 backdrop-blur-md p-5 sm:p-6 border border-purple-700 hover:scale-[1.05] transition shadow-xl"
+        variants={fadeIn(0.3)}
+        initial="hidden"
+        whileInView="visible"
+      >
+        <h4 className="text-lg sm:text-xl font-bold text-white mb-2">
+          NPTEL Course Certificate
+        </h4>
+        <a
+          href="https://internalapp.nptel.ac.in/noc/Ecertificate/?q=NPTEL25CS60S34630022801292168"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-purple-400 hover:underline text-sm sm:text-base"
+        >
+          View Certificate
+        </a>
+      </motion.div>
+
+      <motion.div
+        className="rounded-2xl bg-white/10 backdrop-blur-md p-5 sm:p-6 border border-purple-700 hover:scale-[1.05] transition shadow-xl"
+        variants={fadeIn(0.4)}
+        initial="hidden"
+        whileInView="visible"
+      >
+        <h4 className="text-lg sm:text-xl font-bold text-white mb-2">
+          IBM Cognitive Class Certificate
+        </h4>
+        <a
+          href="https://courses.ibmcep.cognitiveclass.ai/certificates/c74e982be0084a94b91dce9b66812744"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-purple-400 hover:underline text-sm sm:text-base"
+        >
+          View Certificate
+        </a>
+      </motion.div>
+    </div>
+  </div>
+</section>
+
+
       {/* Resume */}
       <section id="resume" className="px-6 sm:px-8 py-12 max-w-4xl mx-auto">
         <motion.h3
@@ -223,29 +328,60 @@ export default function Portfolio() {
           >
             Contact
           </motion.h3>
-          <motion.div
-            className="space-y-4 text-white/80 text-sm sm:text-base"
-            variants={fadeIn(0.2)}
-            initial="hidden"
-            whileInView="visible"
-          >
-            <p className="flex items-center gap-2">
-              <Mail className="text-purple-400" /> jeyabalaganesh2003@gmail.com
-            </p>
-            <p className="flex items-center gap-2">
-              <Github className="text-purple-400" /> github.com/yourusername
-            </p>
-            <p className="flex items-center gap-2">
-              <Globe className="text-purple-400" /> yourwebsite.com
-            </p>
-          </motion.div>
-        </div>
+       {/* Footer with Social Links */}
+<motion.div
+  className="space-y-3 text-white/80"
+  variants={fadeIn(0.2)}
+  initial="hidden"
+  whileInView="visible"
+>
+  <p>
+    <Mail className="inline mr-2 text-purple-400" /> jeyabalaganesh2003@gmail.com
+  </p>
+  <p>
+    <Github className="inline mr-2 text-purple-400" />{" "}
+    <a
+      href="https://github.com/jeyabalaganesh-s"
+      className="hover:text-purple-300"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      github.com/jeyabalaganesh-s
+    </a>
+  </p>
+  <p>
+    <Linkedin className="inline mr-2 text-purple-400" />{" "}
+    <a
+      href="https://www.linkedin.com/in/jeyabalaganesh-s-13607a244/?trk=people_directory&originalSubdomain=in"
+      className="hover:text-purple-300"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      LinkedIn Profile
+    </a>
+  </p>
+  <p>
+    <Instagram className="inline mr-2 text-purple-400" />{" "}
+    <a
+      href="https://www.instagram.com/jeyabalaganesh.s/"
+      className="hover:text-purple-300"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      @jeyabalaganesh.s
+    </a>
+  </p>
+</motion.div>
+
+ </div>
       </section>
 
-      {/* Footer */}
+{/* Footer */}
       <footer className="py-6 text-center text-purple-600 border-t border-purple-700 mt-12 text-sm sm:text-base">
         &copy; {new Date().getFullYear()} Jeyabalaganesh S. All rights reserved.
       </footer>
+
+
     </div>
   );
 }
