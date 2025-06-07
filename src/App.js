@@ -163,10 +163,6 @@ export default function Portfolio() {
           <div className="grid gap-6 sm:grid-cols-2">
             {[
               {
-                title: "Leada Digital Dynamics Dashboard",
-                desc: "Subdomain-based multilingual analytics dashboard for clinics.",
-              },
-              {
                 title: "Websence AI",
                 desc: "Website evaluation using opinion mining + generative AI.",
               },
