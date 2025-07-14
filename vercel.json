@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/clinic",
-      "destination": "https://jaswitha-clinic.token.leada360.com/clinic"
+      "destination": "https://jaswitha-clinic.token.leada360.com"
     }
   ]
 }
