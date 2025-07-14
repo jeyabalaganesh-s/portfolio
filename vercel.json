@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "https://token.leada360.com/clinics"
+    }
+  ]
+}
