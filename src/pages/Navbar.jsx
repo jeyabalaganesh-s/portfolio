@@ -24,7 +24,7 @@ export default function Navbar() {
 
   return (
     <motion.nav
-      className={`fixed top-5 w-[96vw] z-50 left-5 border rounded-[3vh] py-4 transition-all duration-300 ${
+      className={`fixed top-5 w-[96vw] z-50 left-[2vw] border rounded-[3vh] py-4 transition-all duration-300 ${
         scrolled
           ? 'bg-black/80 backdrop-blur shadow-lg border-b border-gray-800'
           : 'bg-transparent border-transparent'

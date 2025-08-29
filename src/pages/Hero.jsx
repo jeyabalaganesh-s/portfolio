@@ -19,7 +19,7 @@ export default function Hero() {
         transition={{ duration: 10, repeat: Infinity, repeatType: 'mirror' }}
       />
 
-      <div className="relative z-30 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
+      <div className="relative top-[10vh] z-30 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
         <motion.div
           className="md:w-1/2 text-center md:text-left"
           initial={{ x: -120, opacity: 0 }}
