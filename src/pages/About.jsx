@@ -40,7 +40,7 @@ export default function About() {
   }}
 >
   <img
-    src="/pprofile.png"
+    src="/profile.png"
     alt="Profile"
     className="w-full h-full object-cover"
   />

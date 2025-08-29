@@ -62,7 +62,7 @@ export default function Hero() {
         >
           <div className="relative w-64 sm:w-80 md:w-[500px] md:h-[700px] rounded-full overflow-hidden hover:scale-105 transition-transform">
             <img
-              src="/profile.png"
+              src="/homeprofile.png"
               alt="Profile"
               className="w-full h-full object-cover rounded-full relative z-10 shadow-2xl"
             />
