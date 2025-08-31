@@ -55,26 +55,6 @@ const Footer = () => {
             © {new Date().getFullYear()} <span className="text-white">Bala</span>{" "}
             | All Rights Reserved
           </p>
-          <p>
-            Designed by{" "}
-            <a
-              href="https://getbootstrap.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-orange-500"
-            >
-              BootstrapMade
-            </a>{" "}
-            | Distributed by{" "}
-            <a
-              href="https://themewagon.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-orange-500"
-            >
-              ThemeWagon
-            </a>
-          </p>
         </div>
       </div>
     </footer>
