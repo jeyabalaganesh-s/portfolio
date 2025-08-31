@@ -13,13 +13,13 @@ export default function ContactSection() {
     {
       icon: <Github className="w-6 h-6 text-orange-400" />,
       label: "GitHub",
-      value: "GitHub",
+      value: "jeyabalaganesh-s",
       link: "https://github.com/jeyabalaganesh-s",
     },
     {
       icon: <Linkedin className="w-6 h-6 text-orange-400" />,
       label: "LinkedIn",
-      value: "LinkedIn",
+      value: "jeyabalaganesh-s",
       link: "https://www.linkedin.com/in/jeyabalaganesh-s/",
     },
     {

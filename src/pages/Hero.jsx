@@ -1,5 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { TypeAnimation } from 'react-type-animation';
+import { FaGithub, FaLinkedin, FaTwitter, FaEnvelope } from 'react-icons/fa';
 
 export default function Hero() {
   return (
@@ -20,19 +22,77 @@ export default function Hero() {
       />
 
       <div className="relative top-[10vh] z-30 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
+        {/* Left Section */}
         <motion.div
           className="md:w-1/2 text-center md:text-left"
           initial={{ x: -120, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          <p className="text-orange-500 mb-2 text-lg font-medium tracking-wide">Hello, I'm</p>
+          <p className="text-orange-500 mb-2 text-lg font-medium tracking-wide">
+            Hello, I'm
+          </p>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 text-white leading-tight">
             Jeyabalaganesh
           </h1>
-          <p className="text-gray-400 mb-6 text-base sm:text-lg max-w-md">
-            Full‑Stack Developer & AI Enthusiast building intelligent and scalable web solutions.
-          </p>
+
+          {/* Type Animation */}
+          <TypeAnimation
+            sequence={[
+              "Full-Stack Developer",
+              2000,
+              "AI Engineer",
+              2000,
+              "UI Designer",
+              2000,
+              "Web Architect",
+              2000,
+              "Tech Innovator",
+              2000,
+              "Problem Solver",
+              2000,
+            ]}
+            wrapper="span"
+            speed={50}
+            repeat={Infinity}
+            className="block text-lg mb-[4vh] sm:text-xl text-orange-400 font-medium"
+          />
+
+          {/* Profile Links */}
+          <div className="flex justify-center md:justify-start gap-6 mb-8">
+            <a
+              href="https://github.com/jeyabalaganesh-s"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-300 hover:text-orange-500 text-2xl transition"
+            >
+              <FaGithub />
+            </a>
+            <a
+              href="https://linkedin.com/in/jeyabalaganesh-s"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-300 hover:text-orange-500 text-2xl transition"
+            >
+              <FaLinkedin />
+            </a>
+            <a
+              href="https://x.com/jeyabalaganesh3"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-300 hover:text-orange-500 text-2xl transition"
+            >
+              <FaTwitter />
+            </a>
+            <a
+              href="mailto:jeyabalaganesh2003@gmail.com"
+              className="text-gray-300 hover:text-orange-500 text-2xl transition"
+            >
+              <FaEnvelope />
+            </a>
+          </div>
+
+          {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
             <motion.a
               whileHover={{ scale: 1.05 }}
@@ -46,7 +106,7 @@ export default function Hero() {
             <motion.a
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              href="#portfolio"
+              href="#projects"
               className="border border-gray-400 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 transition"
             >
               My Work
@@ -54,6 +114,7 @@ export default function Hero() {
           </div>
         </motion.div>
 
+        {/* Right Section */}
         <motion.div
           className="md:w-1/2 flex justify-center relative"
           initial={{ x: 120, opacity: 0 }}

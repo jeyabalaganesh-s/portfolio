@@ -1,105 +1,60 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import {
+  FaUser,
+  FaCogs,
+  FaBriefcase,
+  FaFileAlt,
+  FaEnvelope,
+} from "react-icons/fa";
 
-export default function Navbar() {
-  const items = ['About', 'Services', 'Projects', 'Resume', 'Contact'];
-  const [mobileOpen, setMobileOpen] = useState(false);
+export default function Sidebar() {
+  const items = [
+    { id: "about", icon: <FaUser />, label: "About" },
+    { id: "services", icon: <FaCogs />, label: "Services" },
+    { id: "projects", icon: <FaBriefcase />, label: "Projects" },
+    { id: "resume", icon: <FaFileAlt />, label: "Resume" },
+    { id: "contact", icon: <FaEnvelope />, label: "Contact" },
+  ];
+
   const [scrolled, setScrolled] = useState(false);
 
   const handleScroll = (id) => {
     const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-    setMobileOpen(false);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 50);
     };
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
-    <motion.nav
-      className={`fixed top-5 w-[96vw] z-50 left-[2vw] border rounded-[3vh] py-4 transition-all duration-300 ${
-        scrolled
-          ? 'bg-black/80 backdrop-blur shadow-lg border-b border-gray-800'
-          : 'bg-transparent border-transparent'
+    <motion.aside
+      initial={{ x: -80, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className={`fixed top-[25vh] -translate-y-1/2 left-4 z-50 flex flex-col items-center gap-6 p-3 rounded-3xl shadow-lg transition-all duration-300 ${
+        scrolled ? "bg-black/80 backdrop-blur-lg" : "bg-black/50"
       }`}
-      initial={{ y: -50, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6 }}
     >
-      <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-        <a
-          href="#hero"
-          onClick={(e) => {
-            e.preventDefault();
-            handleScroll('hero');
-          }}
-          className="text-2xl font-bold text-orange-500 transition-transform"
+      {items.map((item) => (
+        <motion.button
+          key={item.id}
+          whileHover={{ scale: 1.2 }}
+          onClick={() => handleScroll(item.id)}
+          className="relative flex items-center justify-center w-12 h-12 text-white hover:text-orange-500 transition group"
         >
-          Jeya<span className="text-white">balaganesh</span>
-        </a>
-
-        <ul className="hidden md:flex gap-8">
-          {items.map((item) => (
-            <motion.li
-              key={item}
-              whileHover={{ scale: 1.1 }}
-              className="relative group"
-            >
-              <a
-                href={`#${item.toLowerCase()}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleScroll(item.toLowerCase());
-                }}
-                className="text-white scale-100 hover:text-orange-500"
-              >
-                {item}
-              </a>
-              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-orange-500 transition-all group-hover:w-full"></span>
-            </motion.li>
-          ))}
-        </ul>
-
-        <div
-          className="md:hidden cursor-pointer text-2xl select-none"
-          onClick={() => setMobileOpen(!mobileOpen)}
-        >
-          ☰
-        </div>
-      </div>
-
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.ul
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="md:hidden bg-black/90 backdrop-blur flex flex-col items-center gap-6 py-6 rounded-b-xl mt-2"
-          >
-            {items.map((item) => (
-              <li key={item}>
-                <a
-                  href={`#${item.toLowerCase()}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleScroll(item.toLowerCase());
-                  }}
-                  className="text-white text-lg hover:text-orange-500 transition"
-                >
-                  {item}
-                </a>
-              </li>
-            ))}
-          </motion.ul>
-        )}
-      </AnimatePresence>
-    </motion.nav>
+          {item.icon}
+          {/* Tooltip */}
+          <span className="absolute left-14 bg-black text-white px-2 py-1 text-sm rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap">
+            {item.label}
+          </span>
+        </motion.button>
+      ))}
+    </motion.aside>
   );
 }

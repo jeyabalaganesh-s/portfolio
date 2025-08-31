@@ -7,7 +7,9 @@ import ResumeSection from "./pages/ResumeSection";
 import ContactSection from "./pages/ContactSection";
 import CertificatesSection from "./pages/CertificatesSection";
 import PublicationsSection from "./pages/PublicationsSection";
+import Education from "./pages/Education";
 import About from "./pages/About";
+import Footer from './pages/Footer';
 
 import "./styles/global.css";
 
@@ -18,13 +20,15 @@ export default function App() {
       <main className="flex-grow">
          { <Navbar /> }
       {<Hero /> }
+      {<About /> }      
       {<Services /> }
-      {<About /> }
       {<Portfolio /> }
       <ResumeSection />
+      {<Education /> }
       {<CertificatesSection /> }
       {<PublicationsSection />}
       { <ContactSection /> }
+      {<Footer />}
       </main>
     </div>
   );
