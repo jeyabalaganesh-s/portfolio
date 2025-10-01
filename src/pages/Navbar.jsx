@@ -1,60 +1,96 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import {
-  FaUser,
-  FaCogs,
-  FaBriefcase,
-  FaFileAlt,
-  FaEnvelope,
-} from "react-icons/fa";
 
-export default function Sidebar() {
+export default function TopNavBar() {
   const items = [
-    { id: "about", icon: <FaUser />, label: "About" },
-    { id: "services", icon: <FaCogs />, label: "Services" },
-    { id: "projects", icon: <FaBriefcase />, label: "Projects" },
-    { id: "resume", icon: <FaFileAlt />, label: "Resume" },
-    { id: "contact", icon: <FaEnvelope />, label: "Contact" },
+    { id: "about", label: "About" },
+    { id: "services", label: "Services" },
+    { id: "projects", label: "Projects" },
+    { id: "resume", label: "Resume" },
+    { id: "education", label: "Education" },
+    { id: "certificates", label: "Certificates" },
+    { id: "publications", label: "Publications" },
+    { id: "contact", label: "Contact" },
   ];
 
-  const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("about");
+  const [positions, setPositions] = useState({ left: 0, width: 0 });
+  const refs = useRef({});
 
   const handleScroll = (id) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Track active section
   useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 50);
+    const handleActive = () => {
+      let current = "about";
+      items.forEach((item) => {
+        const el = document.getElementById(item.id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= 150 && rect.bottom >= 150) {
+            current = item.id;
+          }
+        }
+      });
+      setActiveSection(current);
     };
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("scroll", handleActive);
+    return () => window.removeEventListener("scroll", handleActive);
   }, []);
 
+  // Update underline
+  useEffect(() => {
+    const el = refs.current[activeSection];
+    if (el) {
+      setPositions({ left: el.offsetLeft, width: el.offsetWidth });
+    }
+  }, [activeSection]);
+
   return (
-    <motion.aside
-      initial={{ x: -80, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className={`fixed top-[25vh] -translate-y-1/2 left-4 z-50 flex flex-col items-center gap-6 p-3 rounded-3xl shadow-lg transition-all duration-300 ${
-        scrolled ? "bg-black/80 backdrop-blur-lg" : "bg-black/50"
-      }`}
+    <motion.div
+      initial={{ y: -50, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="fixed top-4 left-[20vw] -translate-x-1/2 z-50 
+                 bg-black/40 backdrop-blur-lg rounded-full 
+                 px-3 sm:px-6 py-2 sm:py-3 shadow-xl border border-white/10 
+                 w-[95%] sm:w-auto overflow-x-auto"
     >
-      {items.map((item) => (
-        <motion.button
-          key={item.id}
-          whileHover={{ scale: 1.2 }}
-          onClick={() => handleScroll(item.id)}
-          className="relative flex items-center justify-center w-12 h-12 text-white hover:text-orange-500 transition group"
-        >
-          {item.icon}
-          {/* Tooltip */}
-          <span className="absolute left-14 bg-black text-white px-2 py-1 text-sm rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap">
+      <div className="flex gap-4 sm:gap-8 relative min-w-max">
+        {items.map((item) => (
+          <button
+            key={item.id}
+            ref={(el) => (refs.current[item.id] = el)}
+            onClick={() => handleScroll(item.id)}
+            className={`relative px-2 sm:px-0 text-xs sm:text-sm md:text-base font-medium whitespace-nowrap transition-colors duration-300 ${
+              activeSection === item.id
+                ? "text-purple-400"
+                : "text-white/70 hover:text-purple-300"
+            }`}
+          >
             {item.label}
-          </span>
-        </motion.button>
-      ))}
-    </motion.aside>
+
+            {/* active pill background */}
+            {activeSection === item.id && (
+              <motion.span
+                layoutId="active-pill"
+                className="absolute inset-0 rounded-md bg-purple-500/10 -z-10"
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              />
+            )}
+          </button>
+        ))}
+
+        {/* underline slider */}
+        <motion.div
+          className="absolute bottom-0 h-[2px] bg-purple-400 rounded-full"
+          animate={{ left: positions.left, width: positions.width }}
+          transition={{ type: "spring", stiffness: 400, damping: 30 }}
+        />
+      </div>
+    </motion.div>
   );
 }

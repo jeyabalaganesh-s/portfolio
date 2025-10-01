@@ -12,6 +12,7 @@ const education = [
 
 export default function Education() {
   return (
+    <section id ="education">
     <div className="min-h-screen bg-black py-20 px-6">
       <div className="max-w-4xl mx-auto">
         {/* Heading */}
@@ -47,5 +48,6 @@ export default function Education() {
         </div>
       </div>
     </div>
+    </section>
   );
 }
