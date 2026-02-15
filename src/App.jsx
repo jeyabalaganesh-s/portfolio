@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from './pages/Navbar';
 import Hero from './pages/Hero';
 import Services from './pages/Services';
@@ -10,25 +10,31 @@ import PublicationsSection from "./pages/PublicationsSection";
 import Education from "./pages/Education";
 import About from "./pages/About";
 import Footer from './pages/Footer';
+import LoadingScreen from "./pages/LoadingScreen";
 
 import "./styles/global.css";
 
 export default function App() {
+  const [loading, setLoading] = useState(true);
+
+  if (loading) {
+    return <LoadingScreen onFinish={() => setLoading(false)} />;
+  }
+
   return (
     <div className="bg-black text-white min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
-         { <Navbar /> }
-      {<Hero /> }
-      {<About /> }      
-      {<Services /> }
-      {<Portfolio /> }
-      <ResumeSection />
-      {<Education /> }
-      {<CertificatesSection /> }
-      {<PublicationsSection />}
-      { <ContactSection /> }
-      {<Footer />}
+        <Hero />
+        <About />
+        <Services />
+        <Portfolio />
+        <ResumeSection />
+        <Education />
+        <CertificatesSection />
+        <PublicationsSection />
+        <ContactSection />
+        <Footer />
       </main>
     </div>
   );
