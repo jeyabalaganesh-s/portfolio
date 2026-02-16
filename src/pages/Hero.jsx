@@ -21,15 +21,6 @@ const container = {
   },
 };
 
-const links = [
-  { icon: FaEnvelope, url: "mailto:jeyabalaganesh2003@gmail.com" },
-  { icon: FaGithub, url: "https://github.com/jeyabalaganesh-s" },
-  { icon: FaLinkedin, url: "https://www.linkedin.com/in/jeyabalaganesh-s/" },
-  { icon: FaInstagram, url: "https://www.instagram.com/jeyabalaganesh.s/" },
-  { icon: FaTwitter, url: "https://x.com/jeyabalaganesh3" },
-  { icon: FaGlobe, url: "https://jeyabalaganesh.in/" },
-];
-
 const item = {
   hidden: { y: 40, opacity: 0 },
   show: {
@@ -40,7 +31,6 @@ const item = {
 };
 
 export default function Hero() {
-  /* 🔥 Rotating Roles */
   const roles = [
     "Full-Stack Developer",
     "AI Agent Builder",
@@ -57,6 +47,15 @@ export default function Hero() {
 
     return () => clearInterval(interval);
   }, [roles.length]);
+
+  const links = [
+    { icon: FaEnvelope, url: "mailto:jeyabalaganesh2003@gmail.com" },
+    { icon: FaGithub, url: "https://github.com/jeyabalaganesh-s" },
+    { icon: FaLinkedin, url: "https://www.linkedin.com/in/jeyabalaganesh-s/" },
+    { icon: FaInstagram, url: "https://www.instagram.com/jeyabalaganesh.s/" },
+    { icon: FaTwitter, url: "https://x.com/jeyabalaganesh3" },
+    { icon: FaGlobe, url: "https://jeyabalaganesh.in/" },
+  ];
 
   return (
     <section
@@ -81,90 +80,93 @@ export default function Hero() {
           animate="show"
           className="relative flex flex-col items-center lg:items-start text-center lg:text-left"
         >
-          {/* 3D Avatar */}
+
+          {/* 🔥 MOBILE PROFILE IMAGE */}
           <motion.div
             variants={item}
-            className="relative w-[260px] sm:w-[380px] md:w-[480px] 
+            className="block lg:hidden mb-6"
+          >
+            <img
+              src="/homeprofile.png"
+              alt="Jeyabalaganesh"
+              className="w-40 h-40 rounded-full object-cover 
+              border-4 border-orange-500 shadow-xl"
+            />
+          </motion.div>
+
+          {/* 🔥 DESKTOP 3D (UNCHANGED) */}
+          <motion.div
+            variants={item}
+            className="hidden lg:block relative w-[260px] sm:w-[380px] md:w-[480px] 
             lg:w-[650px] lg:left-[20vw] mx-auto lg:mx-0"
           >
             <div className="w-full h-[600px]">
               <Hero3D />
             </div>
-
-            
           </motion.div>
 
-          {/* TEXT OVERLAY */}
-<motion.div
-  variants={container}
-  className="hidden lg:flex flex-col items-start space-y-6 
-  absolute left-0 top-1/2 -translate-y-1/2 max-w-[45vw]"
->
+          {/* TEXT OVERLAY (DESKTOP ONLY — UNCHANGED) */}
+          <motion.div
+            variants={container}
+            className="hidden lg:flex flex-col items-start space-y-6 
+            absolute left-0 top-1/2 -translate-y-1/2 max-w-[45vw]"
+          >
+            <motion.div
+              variants={item}
+              className="text-sm tracking-[0.4em] text-gray-400 uppercase"
+            >
+              I’m
+            </motion.div>
 
-  {/* Small I'M */}
-  <motion.div
-    variants={item}
-    className="text-sm tracking-[0.4em] text-gray-400 uppercase"
-  >
-    I’m
-  </motion.div>
+            <motion.h1
+              variants={item}
+              className="text-6xl font-extrabold leading-tight 
+              bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 
+              bg-clip-text text-transparent"
+            >
+              Jeyabalaganesh
+            </motion.h1>
 
-  {/* Big Name */}
-  <motion.h1
-    variants={item}
-    className="text-6xl font-extrabold leading-tight 
-    bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 
-    bg-clip-text text-transparent"
-  >
-    Jeyabalaganesh
-  </motion.h1>
+            <div className="h-[50px] overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={roles[index]}
+                  initial={{ y: 50, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -50, opacity: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className="text-3xl font-semibold text-white relative"
+                >
+                  {roles[index]}
 
-  {/* Animated Role */}
-  <div className="h-[50px] overflow-hidden">
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={roles[index]}
-        initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: -50, opacity: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-3xl font-semibold text-white relative"
-      >
-        {roles[index]}
+                  <motion.div
+                    layoutId="underline"
+                    className="h-[3px] bg-gradient-to-r from-orange-500 to-pink-500 mt-2"
+                    initial={{ width: 0 }}
+                    animate={{ width: "100%" }}
+                    transition={{ duration: 0.6 }}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
 
-        {/* Animated underline */}
-        <motion.div
-          layoutId="underline"
-          className="h-[3px] bg-gradient-to-r from-orange-500 to-pink-500 mt-2"
-          initial={{ width: 0 }}
-          animate={{ width: "100%" }}
-          transition={{ duration: 0.6 }}
-        />
-      </motion.div>
-    </AnimatePresence>
-  </div>
-
-  {/* About */}
-  <motion.p
-    variants={item}
-    className="text-gray-400 text-lg leading-relaxed max-w-xl"
-  >
-    I build scalable SaaS platforms, AI-powered systems and automation-driven
-    digital products with performance and clean architecture.
-  </motion.p>
-
-</motion.div>
-
+            <motion.p
+              variants={item}
+              className="text-gray-400 text-lg leading-relaxed max-w-xl"
+            >
+              I build scalable SaaS platforms, AI-powered systems and automation-driven
+              digital products with performance and clean architecture.
+            </motion.p>
+          </motion.div>
         </motion.div>
 
-        {/* RIGHT SIDE */}
+        {/* RIGHT SIDE (UNCHANGED) */}
         <motion.div
           variants={container}
           initial="hidden"
           animate="show"
           className="space-y-10 max-w-sm mx-auto lg:mx-0 mt-12 lg:mt-0 text-center lg:text-left"
         >
-          {/* ABOUT SECTION */}
           <motion.div
             variants={item}
             className="space-y-2 border-b border-gray-700 pb-6"
@@ -179,7 +181,6 @@ export default function Hero() {
             </a>
           </motion.div>
 
-          {/* WORK SECTION */}
           <motion.div
             variants={item}
             className="space-y-2 border-b border-gray-700 pb-6"
@@ -194,24 +195,24 @@ export default function Hero() {
             </a>
           </motion.div>
 
-          {/* SOCIAL ICONS */}
           <motion.div
             variants={item}
             className="flex justify-center lg:justify-start space-x-6 text-2xl"
           >
-            {[FaEnvelope, FaGithub, FaLinkedin, FaInstagram, FaTwitter, FaGlobe].map(
-              (Icon, i) => (
+            {links.map((link, i) => {
+              const Icon = link.icon;
+              return (
                 <motion.a
                   key={i}
                   whileHover={{ scale: 1.2 }}
                   whileTap={{ scale: 0.9 }}
                   className="text-gray-400 hover:text-orange-500 transition-colors"
-                  href={links[i]?.url || "#"}
+                  href={link.url}
                 >
                   <Icon />
                 </motion.a>
-              )
-            )}
+              );
+            })}
           </motion.div>
         </motion.div>
       </div>
