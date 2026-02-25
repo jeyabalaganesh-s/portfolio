@@ -39,13 +39,13 @@ export default function Hero() {
 
   const [index, setIndex] = useState(0);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % roles.length);
-    }, 2500);
+useEffect(() => {
+  const interval = setInterval(() => {
+    setIndex((prev) => (prev + 1) % roles.length);
+  }, 2500);
 
-    return () => clearInterval(interval);
-  }, []);
+  return () => clearInterval(interval);
+}, [roles.length]);
 
   const links = [
     { icon: FaEnvelope, url: "mailto:jeyabalaganesh2003@gmail.com" },
