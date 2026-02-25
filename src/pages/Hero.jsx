@@ -33,9 +33,8 @@ const item = {
 export default function Hero() {
   const roles = [
     "Full-Stack Developer",
-    "AI Agent Builder",
     "SaaS Architect",
-    "Automation Enthusiast",
+    "AI Enthusiast",
   ];
 
   const [index, setIndex] = useState(0);
@@ -46,7 +45,7 @@ export default function Hero() {
     }, 2500);
 
     return () => clearInterval(interval);
-  }, [roles.length]);
+  }, []);
 
   const links = [
     { icon: FaEnvelope, url: "mailto:jeyabalaganesh2003@gmail.com" },
@@ -60,19 +59,66 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center justify-center bg-black text-white px-4 sm:px-6 lg:px-20 overflow-hidden"
+      className="relative min-h-screen bg-black text-white px-4 sm:px-6 lg:px-20 overflow-hidden"
     >
-      {/* Background Animated Gradient Blob */}
-      <motion.div
-        className="absolute top-[10vh] left-[25vw] w-[50vw] h-[50vw] 
-        bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 
-        rounded-full blur-3xl opacity-30"
-        animate={{ x: [0, 50, 0], y: [0, 30, 0] }}
-        transition={{ duration: 10, repeat: Infinity, repeatType: "mirror" }}
-      />
+      {/* ================= MOBILE HERO ================= */}
+      {/* ================= MOBILE HERO ================= */}
+<div className="lg:hidden absolute inset-0 z-0">
 
+  {/* 3D MODEL CENTERED */}
+  <div className="absolute inset-0 top-[20vh] flex items-center justify-center">
+    <Hero3D />
+  </div>
+
+  {/* CINEMATIC GRADIENT OVERLAY */}
+  <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black" />
+
+  {/* HELLO TEXT */}
+  <motion.div
+    initial={{ opacity: 0, y: -20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.8 }}
+    className="absolute top-[18vh] left-6 text-orange-400 text-lg"
+  >
+    Hello! I’m
+  </motion.div>
+
+  {/* BIG NAME */}
+  <motion.h1
+    initial={{ opacity: 0, y: -20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.8, delay: 0.2 }}
+    className="absolute top-[22vh] left-6 text-4xl font-bold uppercase text-white"
+  >
+    JEYABALAGANESH S
+  </motion.h1>
+
+  {/* BOTTOM TITLE */}
+  <div className="absolute bottom-24 w-full text-center">
+    <p className="text-orange-400 text-lg tracking-widest">
+      A Creative
+    </p>
+
+    <AnimatePresence mode="wait">
+      <motion.h2
+        key={roles[index]}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.6 }}
+        className="text-4xl font-extrabold text-white"
+      >
+        {roles[index].split(" ")[0]}
+        <br />
+        {roles[index].split(" ").slice(1).join(" ")}
+      </motion.h2>
+    </AnimatePresence>
+  </div>
+</div>
+
+      {/* ================= DESKTOP HERO (UNCHANGED) ================= */}
       <div className="w-full grid grid-cols-1 lg:grid-cols-[1fr_350px] items-center relative z-10">
-        
+
         {/* LEFT SIDE */}
         <motion.div
           variants={container}
@@ -81,31 +127,18 @@ export default function Hero() {
           className="relative flex flex-col items-center lg:items-start text-center lg:text-left"
         >
 
-          {/* 🔥 MOBILE PROFILE IMAGE */}
-          <motion.div
-            variants={item}
-            className="block lg:hidden mb-6"
-          >
-            <img
-              src="/homeprofile.png"
-              alt="Jeyabalaganesh"
-              className="w-40 h-40 rounded-full object-cover 
-              border-4 border-orange-500 shadow-xl"
-            />
-          </motion.div>
-
-          {/* 🔥 DESKTOP 3D (UNCHANGED) */}
+          {/* DESKTOP 3D */}
           <motion.div
             variants={item}
             className="hidden lg:block relative w-[260px] sm:w-[380px] md:w-[480px] 
             lg:w-[650px] lg:left-[20vw] mx-auto lg:mx-0"
           >
-            <div className="w-full h-[600px]">
+            <div className="w-full relative top-[10vh] h-[600px]">
               <Hero3D />
             </div>
           </motion.div>
 
-          {/* TEXT OVERLAY (DESKTOP ONLY — UNCHANGED) */}
+          {/* TEXT OVERLAY (DESKTOP ONLY) */}
           <motion.div
             variants={container}
             className="hidden lg:flex flex-col items-start space-y-6 
@@ -113,18 +146,18 @@ export default function Hero() {
           >
             <motion.div
               variants={item}
-              className="text-sm tracking-[0.4em] text-gray-400 uppercase"
+              className="text-sm tracking-[0.4em] text-gray-400 "
             >
-              I’m
+              Hello I’m
             </motion.div>
 
             <motion.h1
               variants={item}
               className="text-6xl font-extrabold leading-tight 
-              bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 
-              bg-clip-text text-transparent"
+              bg-orange-500
+              bg-clip-text text-transparent uppercase"
             >
-              Jeyabalaganesh
+              Jeyabalaganesh s
             </motion.h1>
 
             <div className="h-[50px] overflow-hidden">
@@ -159,40 +192,45 @@ export default function Hero() {
             </motion.p>
           </motion.div>
         </motion.div>
-
-        {/* RIGHT SIDE (UNCHANGED) */}
         <motion.div
           variants={container}
-          initial="hidden"
-          animate="show"
-          className="space-y-10 max-w-sm mx-auto lg:mx-0 mt-12 lg:mt-0 text-center lg:text-left"
+          className="hidden lg:block"
         >
+          {/* RIGHT SIDE */}
           <motion.div
-            variants={item}
-            className="space-y-2 border-b border-gray-700 pb-6"
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="space-y-10 max-w-sm mx-auto lg:mx-0 mt-12 lg:mt-0 text-center lg:text-left"
           >
-            <h3 className="text-lg font-bold">ABOUT ME</h3>
-            <p className="text-gray-400">
-              Passionate about building scalable SaaS products, AI systems,
-              automation workflows, and modern digital experiences.
-            </p>
-            <a href="#about" className="text-orange-400 hover:underline">
-              Learn More →
-            </a>
-          </motion.div>
+            <motion.div
+              variants={item}
+              className="space-y-2 border-b border-gray-700 pb-6"
+            >
+              <h3 className="text-lg font-bold">ABOUT ME</h3>
+              <p className="text-gray-400">
+                Passionate about building scalable SaaS products, AI systems,
+                automation workflows, and modern digital experiences.
+              </p>
+              <a href="#about" className="text-orange-400 hover:underline">
+                Learn More →
+              </a>
+            </motion.div>
 
-          <motion.div
-            variants={item}
-            className="space-y-2 border-b border-gray-700 pb-6"
-          >
-            <h3 className="text-lg font-bold">MY WORK</h3>
-            <p className="text-gray-400">
-              Explore CRM systems, Expo OS, AI Agents, automation tools,
-              and full-stack SaaS platforms.
-            </p>
-            <a href="#projects" className="text-orange-400 hover:underline">
-              Browse Portfolio →
-            </a>
+            <motion.div
+              variants={item}
+              className="space-y-2 border-b border-gray-700 pb-6"
+            >
+              <h3 className="text-lg font-bold">MY WORK</h3>
+              <p className="text-gray-400">
+                Explore CRM systems, Expo OS, AI Agents, automation tools,
+                and full-stack SaaS platforms.
+              </p>
+              <a href="#projects" className="text-orange-400 hover:underline">
+                Browse Portfolio →
+              </a>
+            </motion.div>
+
           </motion.div>
 
           <motion.div
