@@ -20,7 +20,6 @@ export default function TopNavBar() {
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Detect active section
   useEffect(() => {
     const handleActive = () => {
       let current = "about";
@@ -45,7 +44,8 @@ export default function TopNavBar() {
   return (
     <>
       {/* SIDE DOT NAV */}
-      <div className="hidden lg:flex fixed right-8 top-1/2 -translate-y-1/2 z-50 flex-col gap-6">
+      <div className="hidden lg:flex fixed right-10 top-1/2 -translate-y-1/2 z-50 flex-col gap-8">
+
         {items.map((item) => (
           <motion.div
             key={item.id}
@@ -56,16 +56,18 @@ export default function TopNavBar() {
             <div
               className={`w-3 h-3 rounded-full transition-all duration-300 ${
                 activeSection === item.id
-                  ? "bg-gradient-to-r from-orange-400 to-pink-500 shadow-lg scale-125"
-                  : "bg-white/40"
+                  ? "bg-orange-500 shadow-[0_0_12px_rgba(249,115,22,0.8)] scale-125"
+                  : "bg-white/30"
               }`}
             />
 
+            {/* Tooltip */}
             <span
-              className="absolute right-6 top-1/2 -translate-y-1/2 
+              className="absolute right-7 top-1/2 -translate-y-1/2 
               opacity-0 group-hover:opacity-100 
-              transition-opacity duration-300 
-              text-sm text-white whitespace-nowrap"
+              transition-all duration-300 
+              text-xs tracking-widest text-white/80 
+              bg-black px-3 py-1 rounded-md border border-white/10"
             >
               {item.label}
             </span>
@@ -73,18 +75,41 @@ export default function TopNavBar() {
         ))}
       </div>
 
-      {/* ================= FLOATING RESUME BUTTON ================= */}
-      <motion.button
-        onClick={() => setShowResumeModal(true)}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="hidden lg:flex fixed bottom-8 right-8 z-50 
-        items-center gap-2 px-5 py-3 hover:text-gray-300"
-      >
-        <FaDownload />
-        RESUME
-      </motion.button>
-      {/* ================= RESUME MODAL ================= */}
+      {/* FLOATING RESUME BUTTON */}
+     {/* ================= RESUME BUTTON ================= */}
+
+{/* Desktop → Vertical */}
+<motion.button
+  onClick={() => setShowResumeModal(true)}
+  whileHover={{ x: -6 }}
+  whileTap={{ scale: 0.95 }}
+  className="hidden lg:flex fixed right-10 bottom-[10vh] -translate-y-1/2 z-50 
+  flex-row items-center gap-3 px-4 py-6 
+  hover:border-orange-500/50 
+  text-white transition-all duration-300 rounded-l-lg"
+>
+  <FaDownload className="text-orange-500 text-lg" />
+  <span className="tracking-widest text-xs">
+    RESUME
+  </span>
+</motion.button>
+
+{/* Mobile → Horizontal Bottom */}
+<motion.button
+  onClick={() => setShowResumeModal(true)}
+ 
+
+  className="lg:hidden fixed bottom-12 right-0 z-50 
+  flex items-center gap-3 px-2 py-3 rotate-90
+  text-white rounded-full shadow-lg transition-all duration-300"
+>
+  <FaDownload />
+  <span className="text-sm">
+   Resume
+  </span>
+</motion.button>
+
+      {/* RESUME MODAL */}
       <AnimatePresence>
         {showResumeModal && (
           <motion.div
@@ -94,28 +119,30 @@ export default function TopNavBar() {
             className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-6"
           >
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
+              initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
+              exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="relative w-full max-w-4xl h-[80vh] bg-black rounded-xl shadow-2xl overflow-hidden border border-white/10"
+              className="relative w-full max-w-5xl h-[85vh] bg-black rounded-xl shadow-2xl overflow-hidden border border-white/10"
             >
-              {/* Close Button */}
+              {/* Close */}
               <button
                 onClick={() => setShowResumeModal(false)}
-                className="absolute top-4 right-4 text-white hover:text-orange-500 z-10"
+                className="absolute top-5 right-5 text-white/60 hover:text-orange-500 z-10"
               >
-                <FaTimes size={20} />
+                <FaTimes size={18} />
               </button>
 
-              {/* Download Button */}
+              {/* Download */}
               <a
                 href="/resume.pdf"
                 download
-                className="absolute top-4 left-4 flex items-center gap-2 text-sm bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded-md text-white transition"
+                className="absolute top-5 left-5 flex items-center gap-2 text-xs tracking-widest 
+                bg-orange-500 hover:bg-orange-600 
+                px-4 py-2 rounded-md text-white transition"
               >
                 <FaDownload />
-                Download
+                DOWNLOAD
               </a>
 
               {/* PDF Preview */}

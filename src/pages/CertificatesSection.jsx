@@ -15,44 +15,72 @@ const certificates = [
 
 export default function CertificatesSection() {
   return (
-    <section id="certificates" className="relative bg-black py-24 px-6 overflow-hidden">
-      {/* Background blobs */}
+    <section
+      id="certificates"
+      className="relative bg-black py-28 px-6 overflow-hidden"
+    >
+      {/* Subtle grid background */}
+      <div className="absolute inset-0 opacity-[0.03] 
+      [background-image:linear-gradient(white_1px,transparent_1px),linear-gradient(90deg,white_1px,transparent_1px)] 
+      [background-size:40px_40px]" />
 
+      <div className="relative z-10 max-w-6xl mx-auto">
 
-      <div className="relative z-20 max-w-5xl mx-auto text-center">
-        <motion.h3
-          className="text-4xl sm:text-5xl font-bold mb-12 bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent"
-          initial={{ opacity: 0, y: -20 }}
+        {/* Header */}
+        <motion.div
+          className="mb-20 max-w-3xl"
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          Certificate Courses
-        </motion.h3>
+          <h2 className="text-sm tracking-[0.4em] text-white/40 uppercase mb-4">
+            Certifications
+          </h2>
 
-        <div className="grid gap-6 sm:grid-cols-2">
+          <h3 className="text-5xl font-bold text-white leading-tight">
+            Professional Certifications
+          </h3>
+
+          <div className="h-[2px] w-24 bg-orange-500 mt-8" />
+        </motion.div>
+
+        {/* Cards */}
+        <div className="grid gap-8 sm:grid-cols-2">
           {certificates.map((cert, idx) => (
             <motion.div
               key={idx}
-              className="bg-gray-900/50 p-6 rounded-xl border border-gray-800 flex flex-col items-start gap-4 shadow-lg hover:shadow-2xl hover:scale-105 transition-transform duration-300"
-              initial={{ opacity: 0, y: 30 }}
+              className="p-8 rounded-xl border border-white/10 
+              bg-white/[0.03] hover:border-orange-500/50 
+              transition-all duration-300"
+              initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.2, duration: 0.6 }}
+              whileHover={{ y: -6 }}
             >
-              <div className="flex items-center gap-2">
-                <Award className="w-6 h-6 text-orange-500" />
-                <h4 className="text-lg font-semibold text-white">{cert.name}</h4>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 flex items-center justify-center 
+                rounded-full border border-orange-500/40">
+                  <Award className="w-6 h-6 text-orange-500" />
+                </div>
+
+                <h4 className="text-lg font-semibold text-white">
+                  {cert.name}
+                </h4>
               </div>
+
               <a
                 href={cert.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-orange-500 hover:text-orange-600 font-medium"
+                className="text-orange-500 text-sm font-medium 
+                hover:text-orange-400 transition"
               >
-                View Certificate
+                View Certificate →
               </a>
             </motion.div>
           ))}
         </div>
+
       </div>
     </section>
   );

@@ -12,42 +12,66 @@ const education = [
 
 export default function Education() {
   return (
-    <section id ="education">
-    <div className="min-h-screen bg-black py-20 px-6">
-      <div className="max-w-4xl mx-auto">
+    <section id="education" className="relative bg-black py-28 px-6 overflow-hidden">
+
+      {/* Subtle grid background */}
+      <div className="absolute inset-0 opacity-[0.03] 
+      [background-image:linear-gradient(white_1px,transparent_1px),linear-gradient(90deg,white_1px,transparent_1px)] 
+      [background-size:40px_40px]" />
+
+      <div className="relative z-10 max-w-4xl mx-auto">
+
         {/* Heading */}
-        <motion.h1
-          className="text-4xl font-bold text-center text-white"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="mb-20"
         >
-          Education <span className="text-orange-500">Timeline</span>
-        </motion.h1>
+          <h2 className="text-sm tracking-[0.4em] text-white/40 uppercase mb-4">
+            Education
+          </h2>
+
+          <h3 className="text-5xl font-bold text-white leading-tight">
+            Academic Journey
+          </h3>
+
+          <div className="h-[2px] w-24 bg-orange-500 mt-8" />
+        </motion.div>
 
         {/* Timeline */}
-        <div className="mt-12 relative border-l-2 border-orange-500">
+        <div className="relative border-l border-white/10 pl-10 space-y-16">
           {education.map((edu, idx) => (
             <motion.div
               key={idx}
-              className="mb-10 ml-6"
-              initial={{ opacity: 0, x: -30 }}
+              initial={{ opacity: 0, x: -40 }}
               whileInView={{ opacity: 1, x: 0 }}
-              transition={{ delay: idx * 0.2 }}
+              transition={{ duration: 0.6, delay: idx * 0.2 }}
+              className="relative"
             >
-              {/* Icon */}
-              <span className="absolute -left-4 flex items-center justify-center w-8 h-8 bg-orange-500 rounded-full ring-4 ring-black">
-                <GraduationCap className="w-4 h-4 text-white" />
+              {/* Icon Dot */}
+              <div className="absolute -left-[26px] top-1 flex items-center justify-center w-10 h-10 rounded-full border border-orange-500 bg-black">
+                <GraduationCap className="w-5 h-5 text-orange-500" />
+              </div>
+
+              {/* Year Badge */}
+              <span className="text-xs text-orange-400 tracking-widest">
+                {edu.year}
               </span>
 
               {/* Content */}
-              <h3 className="text-lg font-semibold text-white">{edu.degree}</h3>
-              <p className="text-gray-300">{edu.school}</p>
-              <span className="text-sm text-orange-400 font-medium">{edu.year}</span>
+              <h4 className="text-xl font-semibold text-white mt-2">
+                {edu.degree}
+              </h4>
+
+              <p className="text-white/60 mt-1">
+                {edu.school}
+              </p>
             </motion.div>
           ))}
         </div>
+
       </div>
-    </div>
     </section>
   );
 }

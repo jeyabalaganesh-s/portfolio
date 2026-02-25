@@ -132,8 +132,6 @@ Improves operational efficiency for educational institutions.
 `,
   tags: ["Education", "PHP", "MySQL"]
 }
-
-
 ];
 
 export default function Portfolio() {
@@ -141,12 +139,11 @@ export default function Portfolio() {
   const horizontalRef = useRef(null);
   const [selectedProject, setSelectedProject] = useState(null);
 
-  /* Vertical → Horizontal Scroll */
+  /* Smooth Vertical → Horizontal Scroll */
   useEffect(() => {
     const handleScroll = () => {
       const section = sectionRef.current;
       const horizontal = horizontalRef.current;
-
       if (!section || !horizontal) return;
 
       const scrollTop = window.scrollY;
@@ -164,9 +161,9 @@ export default function Portfolio() {
         const maxTranslate =
           horizontal.scrollWidth - window.innerWidth;
 
-        horizontal.style.transform = `translateX(-${
+        horizontal.style.transform = `translate3d(-${
           progress * maxTranslate
-        }px)`;
+        }px, 0, 0)`;
       }
     };
 
@@ -202,160 +199,183 @@ export default function Portfolio() {
           >
             {projects.map((project, index) => (
               <motion.div
-  key={index}
-  onClick={() => setSelectedProject(project)}
-  className="cursor-pointer min-w-[550px] max-w-[550px] 
-  bg-black/60 p-10 rounded-3xl 
-  border border-gray-800 
-  backdrop-blur-md 
-  hover:scale-105 
-  hover:bg-black/80 
-  hover:shadow-orange-500/20
-  hover:shadow-2xl
-  transition-all duration-500 
-  shadow-xl"
-  initial={{ opacity: 0, y: 60 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.6 }}
->
-  {/* Title */}
-  <h3 className="text-2xl font-bold text-white mb-3">
-    {project.title}
-  </h3>
+                key={index}
+                onClick={() => setSelectedProject(project)}
+                className="cursor-pointer min-w-[550px] max-w-[550px] 
+                bg-black/60 p-10 rounded-3xl 
+                border border-gray-800 
+                hover:scale-105 
+                hover:bg-black/80 
+                hover:shadow-orange-500/20
+                hover:shadow-2xl
+                transition-all duration-500 
+                shadow-xl"
+                initial={{ opacity: 0, y: 60 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                {/* Index Number */}
+                <p className="text-orange-500 text-sm mb-4">
+                  0{index + 1}
+                </p>
 
-  {/* Short Category */}
-  <p className="text-orange-400 text-sm font-medium mb-3">
-    {project.desc}
-  </p>
+                {/* Title */}
+                <h3 className="text-2xl font-bold text-white mb-3">
+                  {project.title}
+                </h3>
 
-  {/* Small Preview Description */}
-  <p className="text-gray-400 text-sm leading-relaxed mb-6 line-clamp-3">
-    {project.preview}
-  </p>
+                <p className="text-orange-400 text-sm font-medium mb-3">
+                  {project.desc}
+                </p>
 
-  {/* Tags */}
-  <div className="flex flex-wrap gap-2 mb-6">
-    {project.tags.map((tag) => (
-      <span
-        key={tag}
-        className="text-xs px-3 py-1 rounded-full 
-        bg-orange-600/20 text-orange-400 
-        border border-orange-500/30"
-      >
-        {tag}
-      </span>
-    ))}
-  </div>
+                <p className="text-gray-400 text-sm leading-relaxed mb-6 line-clamp-3">
+                  {project.preview}
+                </p>
 
-  {/* Explore Hint */}
-  <div className="text-sm text-gray-500 group-hover:text-orange-400 transition">
-    Click to explore →
-  </div>
-</motion.div>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {project.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-xs px-3 py-1 rounded-full 
+                      bg-orange-600/20 text-orange-400 
+                      border border-orange-500/30"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
 
+                <div className="text-sm text-gray-500">
+                  Click to explore →
+                </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Modal */}
-      {/* Modal */}
-<AnimatePresence>
-  {selectedProject && (
-    <motion.div
-      className="fixed inset-0 bg-black/80 backdrop-blur-xl 
-      flex items-center justify-center z-50 p-6"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={() => setSelectedProject(null)}
-    >
-      <motion.div
-        className="relative bg-black max-w-3xl w-full 
-        max-h-[90vh] overflow-y-auto 
-        p-10 rounded-3xl border border-gray-700 shadow-2xl"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.8, opacity: 0 }}
-        transition={{ duration: 0.4 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Close Button */}
-        <button
-          onClick={() => setSelectedProject(null)}
-          className="absolute top-6 right-6 text-gray-400 hover:text-white text-xl"
-        >
-          ✕
-        </button>
-
-        {/* Title */}
-        <h3 className="text-4xl font-bold text-white mb-6">
-          {selectedProject.title}
-        </h3>
-
-        {/* Description Structured */}
-        <div className="space-y-6 text-gray-300 leading-relaxed">
-
-          {/* Overview */}
-          <div>
-            <h4 className="text-orange-400 font-semibold mb-2">
-              Overview
-            </h4>
-            <p>
-              {selectedProject.fullDesc.split("Key Features:")[0]}
-            </p>
-          </div>
-
-          {/* Features */}
-          {selectedProject.fullDesc.includes("Key Features:") && (
-            <div>
-              <h4 className="text-orange-400 font-semibold mb-2">
-                Key Features
-              </h4>
-              <ul className="list-disc pl-5 space-y-1">
-                {selectedProject.fullDesc
-                  .split("Key Features:")[1]
-                  ?.split("Tech Stack:")[0]
-                  ?.split("•")
-                  .filter(Boolean)
-                  .map((feature, i) => (
-                    <li key={i}>{feature.trim()}</li>
-                  ))}
-              </ul>
-            </div>
-          )}
-
-        </div>
-
-        {/* Tags */}
-        <div className="flex flex-wrap gap-2 mt-8">
-          {selectedProject.tags.map((tag) => (
-            <span
-              key={tag}
-              className="text-xs px-3 py-1 rounded-full 
-              bg-orange-600/20 text-orange-400 border border-orange-500/30"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-
-        {/* Visit Button */}
-        <div className="mt-8">
-          <a
-            href={selectedProject.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-6 py-3 bg-orange-500 hover:bg-orange-600 
-            rounded-lg text-white font-medium transition inline-block"
+      <AnimatePresence>
+        {selectedProject && (
+          <motion.div
+            className="fixed inset-0 bg-black/80 backdrop-blur-xl 
+            flex items-center justify-center z-50 p-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedProject(null)}
           >
-            Visit Live Project →
-          </a>
-        </div>
-      </motion.div>
-    </motion.div>
-  )}
-</AnimatePresence>
+            <motion.div
+              className="relative bg-black max-w-3xl w-full 
+              max-h-[90vh] overflow-y-auto 
+              p-10 rounded-3xl border border-gray-700 shadow-2xl"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setSelectedProject(null)}
+                className="absolute top-6 right-6 text-gray-400 hover:text-white text-xl"
+              >
+                ✕
+              </button>
+
+              <h3 className="text-4xl font-bold text-white mb-8">
+                {selectedProject.title}
+              </h3>
+
+              <div className="space-y-8 text-gray-300 leading-relaxed">
+
+                {/* Overview */}
+                <div>
+                  <h4 className="text-orange-400 font-semibold mb-2">
+                    Overview
+                  </h4>
+                  <p>
+                    {selectedProject.fullDesc.split("Key Features:")[0]}
+                  </p>
+                </div>
+
+                {/* Features */}
+                {selectedProject.fullDesc.includes("Key Features:") && (
+                  <div>
+                    <h4 className="text-orange-400 font-semibold mb-2">
+                      Key Features
+                    </h4>
+                    <ul className="list-disc pl-5 space-y-2">
+                      {selectedProject.fullDesc
+                        .split("Key Features:")[1]
+                        ?.split("Tech Stack:")[0]
+                        ?.split("•")
+                        .filter(Boolean)
+                        .map((feature, i) => (
+                          <li key={i}>{feature.trim()}</li>
+                        ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Tech Stack */}
+                {selectedProject.fullDesc.includes("Tech Stack:") && (
+                  <div>
+                    <h4 className="text-orange-400 font-semibold mb-2">
+                      Tech Stack
+                    </h4>
+                    <p>
+                      {selectedProject.fullDesc
+                        .split("Tech Stack:")[1]
+                        ?.split("Impact:")[0]}
+                    </p>
+                  </div>
+                )}
+
+                {/* Impact */}
+                {selectedProject.fullDesc.includes("Impact:") && (
+                  <div>
+                    <h4 className="text-orange-400 font-semibold mb-2">
+                      Impact
+                    </h4>
+                    <p>
+                      {selectedProject.fullDesc.split("Impact:")[1]}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Tags */}
+              <div className="flex flex-wrap gap-2 mt-8">
+                {selectedProject.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-xs px-3 py-1 rounded-full 
+                    bg-orange-600/20 text-orange-400 
+                    border border-orange-500/30"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              {/* Visit Button */}
+              {selectedProject.link && (
+                <div className="mt-8">
+                  <a
+                    href={selectedProject.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-6 py-3 bg-orange-500 hover:bg-orange-600 
+                    rounded-lg text-white font-medium transition inline-block"
+                  >
+                    Visit Live Project →
+                  </a>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

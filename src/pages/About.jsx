@@ -1,16 +1,15 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Code, Database, Cpu, Cloud, Smartphone } from "lucide-react";
-import Hero3D from "./Hero3D";
 
 export default function About() {
 
   const skills = [
-    { icon: <Code className="w-5 h-5 text-orange-500" />, name: "React" },
-    { icon: <Database className="w-5 h-5 text-orange-500" />, name: "Node.js" },
-    { icon: <Cpu className="w-5 h-5 text-orange-500" />, name: "AI / ML" },
-    { icon: <Cloud className="w-5 h-5 text-orange-500" />, name: "Cloud" },
-    { icon: <Smartphone className="w-5 h-5 text-orange-500" />, name: "Optimization" },
+    { icon: <Code className="w-4 h-4" />, name: "React" },
+    { icon: <Database className="w-4 h-4" />, name: "Node.js" },
+    { icon: <Cpu className="w-4 h-4" />, name: "AI / ML" },
+    { icon: <Cloud className="w-4 h-4" />, name: "Cloud" },
+    { icon: <Smartphone className="w-4 h-4" />, name: "Optimization" },
   ];
 
   return (
@@ -19,68 +18,77 @@ export default function About() {
       className="relative min-h-screen bg-black px-6 sm:px-12 py-28 overflow-hidden"
     >
 
-      {/* Subtle Orange Glow */}
-      <div className="absolute right-1/4 top-1/3 w-[500px] h-[500px] 
-      bg-orange-500/10 blur-3xl rounded-full" />
+      {/* Subtle Tech Grid Background */}
+      <div className="absolute inset-0 opacity-[0.03] 
+      [background-image:linear-gradient(white_1px,transparent_1px),linear-gradient(90deg,white_1px,transparent_1px)] 
+      [background-size:40px_40px]" />
 
-      <div className="relative z-10 max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+      {/* Accent Vertical Line */}
+      <div className="absolute left-12 top-32 bottom-32 w-[2px] bg-orange-500/40 hidden lg:block" />
 
-        {/* LEFT TEXT CONTENT */}
+      <div className="relative z-10 max-w-5xl mx-auto space-y-16">
+
+        {/* Heading */}
         <motion.div
-          initial={{ opacity: 0, x: -40 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="space-y-8"
         >
-          <h2 className="text-4xl font-bold text-orange-500 uppercase tracking-wide">
-            About Me
+          <h2 className="text-sm tracking-[0.4em] text-white/40 uppercase mb-4">
+            About
           </h2>
 
-          <p className="text-white/80 leading-relaxed text-lg">
-            I'm <span className="text-orange-400 font-semibold">Jeyabalaganesh S</span>, 
-            a Full-Stack Developer building scalable SaaS platforms and 
-            performance-driven web applications.
-          </p>
-
-          <p className="text-white/70 leading-relaxed">
-            I specialize in React, Node.js, MongoDB, and AI integrations. 
-            My focus is on clean architecture, multi-tenant systems, 
-            and building real-world business solutions.
-          </p>
-
-          {/* Skills */}
-          <div className="flex flex-wrap gap-4 pt-4">
-            {skills.map((skill) => (
-              <motion.div
-                key={skill.name}
-                whileHover={{ scale: 1.05 }}
-                className="flex items-center gap-2 px-4 py-2 
-                border border-orange-500/30 rounded-lg 
-                bg-white/5 backdrop-blur-sm"
-              >
-                {skill.icon}
-                <span className="text-white text-sm">
-                  {skill.name}
-                </span>
-              </motion.div>
-            ))}
-          </div>
+          <h3 className="text-4xl font-bold text-white leading-tight">
+            Building Scalable Systems <br />
+            <span className="text-orange-500">
+              With Clean Architecture
+            </span>
+          </h3>
         </motion.div>
 
-        {/* RIGHT 3D MODEL */}
+        {/* Description */}
         <motion.div
-          initial={{ opacity: 0, x: 40 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative flex justify-center items-center"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="space-y-6 max-w-3xl"
         >
-          <motion.div
-            animate={{ y: [0, -15, 0] }}
-            transition={{ duration: 6, repeat: Infinity }}
-            className="w-[420px] h-[500px]"
-          >
-            <Hero3D />
-          </motion.div>
+          <p className="text-white/80 leading-relaxed text-lg">
+            I'm <span className="text-orange-400 font-semibold">
+              Jeyabalaganesh S
+            </span>, a Full-Stack Developer focused on SaaS platforms,
+            multi-tenant systems, and AI-powered automation tools.
+          </p>
+
+          <p className="text-white/60 leading-relaxed">
+            My approach combines performance, structured architecture,
+            and real-world business logic to build scalable digital products
+            that solve meaningful problems.
+          </p>
+        </motion.div>
+
+        {/* Skills Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-6 max-w-3xl"
+        >
+          {skills.map((skill) => (
+            <motion.div
+              key={skill.name}
+              whileHover={{ scale: 1.08 }}
+              className="flex items-center gap-2 px-4 py-3 
+              border border-white/10 rounded-md 
+              bg-white/5 text-white text-sm
+              hover:border-orange-500/50 transition"
+            >
+              <span className="text-orange-500">
+                {skill.icon}
+              </span>
+              {skill.name}
+            </motion.div>
+          ))}
         </motion.div>
 
       </div>

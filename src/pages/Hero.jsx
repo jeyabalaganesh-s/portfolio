@@ -129,14 +129,14 @@ useEffect(() => {
 
           {/* DESKTOP 3D */}
           <motion.div
-            variants={item}
-            className="hidden lg:block relative w-[260px] sm:w-[380px] md:w-[480px] 
-            lg:w-[650px] lg:left-[20vw] mx-auto lg:mx-0"
-          >
-            <div className="w-full relative top-[10vh] h-[600px]">
-              <Hero3D />
-            </div>
-          </motion.div>
+  variants={item}
+  className="hidden lg:block relative w-[260px] sm:w-[380px] md:w-[480px] 
+  lg:w-[650px] mx-auto lg:mx-0"
+>
+  <div className="w-full relative left-[30vw] top-[20vh] h-[600px] flex items-center justify-center">
+    <Hero3D />
+  </div>
+</motion.div>
 
           {/* TEXT OVERLAY (DESKTOP ONLY) */}
           <motion.div
