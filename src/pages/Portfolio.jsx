@@ -134,248 +134,329 @@ Improves operational efficiency for educational institutions.
 }
 ];
 
+
 export default function Portfolio() {
   const sectionRef = useRef(null);
   const horizontalRef = useRef(null);
+
   const [selectedProject, setSelectedProject] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
 
-  /* Smooth Vertical → Horizontal Scroll */
+  /* Detect screen size */
   useEffect(() => {
-    const handleScroll = () => {
-      const section = sectionRef.current;
-      const horizontal = horizontalRef.current;
-      if (!section || !horizontal) return;
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
+  /* Scroll logic ONLY for desktop */
+  useEffect(() => {
+    if (isMobile) return;
+
+    const section = sectionRef.current;
+    const horizontal = horizontalRef.current;
+
+    if (!section || !horizontal) return;
+
+    let maxScroll = 0;
+
+    const setHeight = () => {
+      const totalWidth = horizontal.scrollWidth;
+      const viewportWidth = window.innerWidth;
+
+      maxScroll = Math.max(totalWidth - viewportWidth, 0);
+
+      section.style.height = `${maxScroll + window.innerHeight}px`;
+    };
+
+    const handleScroll = () => {
       const scrollTop = window.scrollY;
       const offsetTop = section.offsetTop;
       const totalHeight = section.offsetHeight;
       const windowHeight = window.innerHeight;
 
-      if (
-        scrollTop >= offsetTop &&
-        scrollTop <= offsetTop + totalHeight - windowHeight
-      ) {
-        const progress =
-          (scrollTop - offsetTop) / (totalHeight - windowHeight);
+      const total = totalHeight - windowHeight;
+      if (total <= 0) return;
 
-        const maxTranslate =
-          horizontal.scrollWidth - window.innerWidth;
+      let progress = (scrollTop - offsetTop) / total;
+      progress = Math.max(0, Math.min(progress, 1));
 
-        horizontal.style.transform = `translate3d(-${
-          progress * maxTranslate
-        }px, 0, 0)`;
-      }
+      horizontal.style.transform = `translate3d(-${
+        progress * maxScroll
+      }px, 0, 0)`;
     };
 
+    setHeight();
+
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    window.addEventListener("resize", setHeight);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", setHeight);
+    };
+  }, [isMobile]);
 
   return (
     <>
-      {/* Portfolio Section */}
       <section
-        id="projects"
         ref={sectionRef}
         className="relative bg-black"
-        style={{ height: `${projects.length * 100}vh` }}
+        style={{
+          height: isMobile ? "auto" : `${projects.length * 100}vh`
+        }}
       >
-        <div className="sticky top-0 h-screen flex items-center overflow-hidden">
+        
+  {/* Grid Background */}
+  <div className="absolute inset-0 opacity-[0.03] 
+  [background-image:linear-gradient(white_1px,transparent_1px),linear-gradient(90deg,white_1px,transparent_1px)] 
+  [background-size:40px_40px]" />
+
+{/* Section Header */}
+<div
+  initial={{ opacity: 0, y: 40 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.8 }}
+  className="relative z-10 max-w-screen px-8 lg:px-32 mx-auto"
+>
+  {/* Small Label */}
+  <h2 className="text-sm tracking-[0.4em] text-white/40 uppercase mb-4">
+    Projects
+  </h2>
+
+  {/* Main Title */}
+  <h3 className="text-5xl font-bold text-white leading-tight">
+    Selected Work
+  </h3>
+
+
+
+  {/* Subtitle */}
+  <p className="text-white/50 mt-6 max-w-xl">
+    A collection of systems, platforms, and products I have designed and built.
+  </p>
+    {/* Accent Line */}
+  <div className="h-[2px] w-24 bg-orange-500 mt-8" />
+</div>
+
+        {/* Desktop Layout */}
+{!isMobile && (
+  <>
+    
+  
+  <div className="sticky top-0 h-screen flex items-center overflow-hidden">
+    
+    <div
+      ref={horizontalRef}
+      className="flex gap-14 px-24 will-change-transform"
+    >
+      {projects.map((project, index) => (
+        <motion.div
+          key={index}
+          onClick={() => setSelectedProject(project)}
+          className="cursor-pointer min-w-[420px] p-8 rounded-2xl
+          border border-white/10 bg-white/[0.03]
+          hover:border-orange-500/50 hover:bg-white/[0.05]
+          transition-all duration-300"
+          whileHover={{ y: -8 }}
+        >
+          {/* Index */}
+          <p className="text-orange-400 text-sm mb-3">
+            0{index + 1}
+          </p>
 
           {/* Title */}
-          <div className="absolute top-20 left-1/2 -translate-x-1/2 text-center z-10">
-            <h2 className="text-5xl font-bold text-white">
-              My Projects
-            </h2>
-            <p className="text-gray-400 mt-3">
-              Click a project to explore details
+          <h3 className="text-2xl font-semibold text-white mb-2">
+            {project.title}
+          </h3>
+
+          {/* Desc */}
+          <p className="text-orange-400 text-sm mb-3">
+            {project.desc}
+          </p>
+
+          {/* Preview */}
+          <p className="text-white/60 text-sm mb-6 leading-relaxed">
+            {project.preview}
+          </p>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2">
+            {project.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-xs px-3 py-1 rounded-full
+                bg-orange-600/20 text-orange-400"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  </div>
+  </>
+)}
+
+        {/* Mobile Layout (vertical) */}
+{isMobile && (
+  <div className="px-6 py-20 space-y-6">
+    {projects.map((project, index) => (
+      <motion.div
+        key={index}
+        onClick={() => setSelectedProject(project)}
+        className="p-6 rounded-2xl border border-white/10 
+        bg-white/[0.03] cursor-pointer
+        active:scale-[0.98] transition"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: index * 0.05 }}
+      >
+        {/* Index */}
+        <p className="text-orange-400 text-xs mb-2">
+          0{index + 1}
+        </p>
+
+        {/* Title */}
+        <h3 className="text-white text-lg font-semibold mb-2">
+          {project.title}
+        </h3>
+
+        {/* Desc */}
+        <p className="text-orange-400 text-sm mb-2">
+          {project.desc}
+        </p>
+
+        {/* Preview */}
+        <p className="text-gray-400 text-sm leading-relaxed mb-4">
+          {project.preview}
+        </p>
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2">
+          {project.tags.map((tag) => (
+            <span
+              key={tag}
+              className="text-[10px] px-2 py-1 rounded-full 
+              bg-orange-600/20 text-orange-400"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      </motion.div>
+    ))}
+  </div>
+)}
+      </section>
+
+     <AnimatePresence>
+  {selectedProject && (
+    <motion.div
+      className="fixed inset-0 bg-black/80 backdrop-blur-xl flex items-center justify-center z-50 p-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => setSelectedProject(null)}
+    >
+      <motion.div
+        className="relative bg-black max-w-3xl w-full max-h-[90vh] overflow-y-auto p-10 rounded-3xl border border-gray-700 shadow-2xl"
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.8, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={() => setSelectedProject(null)}
+          className="absolute top-6 right-6 text-gray-400 hover:text-white"
+        >
+          ✕
+        </button>
+
+        <h3 className="text-4xl font-bold text-white mb-8">
+          {selectedProject.title}
+        </h3>
+
+        <div className="space-y-8 text-gray-300 leading-relaxed">
+
+          {/* Overview */}
+          <div>
+            <h4 className="text-orange-400 font-semibold mb-2">
+              Overview
+            </h4>
+            <p>
+              {selectedProject.fullDesc.split("Key Features:")[0]}
             </p>
           </div>
 
-          {/* Horizontal Track */}
-          <div
-            ref={horizontalRef}
-            className="flex gap-16 px-24 transition-transform duration-75 ease-linear"
-          >
-            {projects.map((project, index) => (
-              <motion.div
-                key={index}
-                onClick={() => setSelectedProject(project)}
-                className="cursor-pointer min-w-[550px] max-w-[550px] 
-                bg-black/60 p-10 rounded-3xl 
-                border border-gray-800 
-                hover:scale-105 
-                hover:bg-black/80 
-                hover:shadow-orange-500/20
-                hover:shadow-2xl
-                transition-all duration-500 
-                shadow-xl"
-                initial={{ opacity: 0, y: 60 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                {/* Index Number */}
-                <p className="text-orange-500 text-sm mb-4">
-                  0{index + 1}
-                </p>
-
-                {/* Title */}
-                <h3 className="text-2xl font-bold text-white mb-3">
-                  {project.title}
-                </h3>
-
-                <p className="text-orange-400 text-sm font-medium mb-3">
-                  {project.desc}
-                </p>
-
-                <p className="text-gray-400 text-sm leading-relaxed mb-6 line-clamp-3">
-                  {project.preview}
-                </p>
-
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {project.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-xs px-3 py-1 rounded-full 
-                      bg-orange-600/20 text-orange-400 
-                      border border-orange-500/30"
-                    >
-                      {tag}
-                    </span>
+          {/* Features */}
+          {selectedProject.fullDesc.includes("Key Features:") && (
+            <div>
+              <h4 className="text-orange-400 font-semibold mb-2">
+                Key Features
+              </h4>
+              <ul className="list-disc pl-5 space-y-2">
+                {selectedProject.fullDesc
+                  .split("Key Features:")[1]
+                  ?.split("Tech Stack:")[0]
+                  ?.split("•")
+                  .filter(Boolean)
+                  .map((f, i) => (
+                    <li key={i}>{f.trim()}</li>
                   ))}
-                </div>
+              </ul>
+            </div>
+          )}
 
-                <div className="text-sm text-gray-500">
-                  Click to explore →
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          {/* Tech Stack */}
+          {selectedProject.fullDesc.includes("Tech Stack:") && (
+            <div>
+              <h4 className="text-orange-400 font-semibold mb-2">
+                Tech Stack
+              </h4>
+              <p>
+                {selectedProject.fullDesc
+                  .split("Tech Stack:")[1]
+                  ?.split("Impact:")[0]
+                  ?.trim()}
+              </p>
+            </div>
+          )}
+
+          {/* Impact */}
+          {selectedProject.fullDesc.includes("Impact:") && (
+            <div>
+              <h4 className="text-orange-400 font-semibold mb-2">
+                Impact
+              </h4>
+              <p>
+                {selectedProject.fullDesc
+                  .split("Impact:")[1]
+                  ?.trim()}
+              </p>
+            </div>
+          )}
         </div>
-      </section>
 
-      {/* Modal */}
-      <AnimatePresence>
-        {selectedProject && (
-          <motion.div
-            className="fixed inset-0 bg-black/80 backdrop-blur-xl 
-            flex items-center justify-center z-50 p-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedProject(null)}
-          >
-            <motion.div
-              className="relative bg-black max-w-3xl w-full 
-              max-h-[90vh] overflow-y-auto 
-              p-10 rounded-3xl border border-gray-700 shadow-2xl"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              onClick={(e) => e.stopPropagation()}
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 mt-8">
+          {selectedProject.tags.map((tag) => (
+            <span
+              key={tag}
+              className="text-xs px-3 py-1 rounded-full 
+              bg-orange-600/20 text-orange-400 
+              border border-orange-500/30"
             >
-              <button
-                onClick={() => setSelectedProject(null)}
-                className="absolute top-6 right-6 text-gray-400 hover:text-white text-xl"
-              >
-                ✕
-              </button>
-
-              <h3 className="text-4xl font-bold text-white mb-8">
-                {selectedProject.title}
-              </h3>
-
-              <div className="space-y-8 text-gray-300 leading-relaxed">
-
-                {/* Overview */}
-                <div>
-                  <h4 className="text-orange-400 font-semibold mb-2">
-                    Overview
-                  </h4>
-                  <p>
-                    {selectedProject.fullDesc.split("Key Features:")[0]}
-                  </p>
-                </div>
-
-                {/* Features */}
-                {selectedProject.fullDesc.includes("Key Features:") && (
-                  <div>
-                    <h4 className="text-orange-400 font-semibold mb-2">
-                      Key Features
-                    </h4>
-                    <ul className="list-disc pl-5 space-y-2">
-                      {selectedProject.fullDesc
-                        .split("Key Features:")[1]
-                        ?.split("Tech Stack:")[0]
-                        ?.split("•")
-                        .filter(Boolean)
-                        .map((feature, i) => (
-                          <li key={i}>{feature.trim()}</li>
-                        ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Tech Stack */}
-                {selectedProject.fullDesc.includes("Tech Stack:") && (
-                  <div>
-                    <h4 className="text-orange-400 font-semibold mb-2">
-                      Tech Stack
-                    </h4>
-                    <p>
-                      {selectedProject.fullDesc
-                        .split("Tech Stack:")[1]
-                        ?.split("Impact:")[0]}
-                    </p>
-                  </div>
-                )}
-
-                {/* Impact */}
-                {selectedProject.fullDesc.includes("Impact:") && (
-                  <div>
-                    <h4 className="text-orange-400 font-semibold mb-2">
-                      Impact
-                    </h4>
-                    <p>
-                      {selectedProject.fullDesc.split("Impact:")[1]}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2 mt-8">
-                {selectedProject.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-xs px-3 py-1 rounded-full 
-                    bg-orange-600/20 text-orange-400 
-                    border border-orange-500/30"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-
-              {/* Visit Button */}
-              {selectedProject.link && (
-                <div className="mt-8">
-                  <a
-                    href={selectedProject.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-6 py-3 bg-orange-500 hover:bg-orange-600 
-                    rounded-lg text-white font-medium transition inline-block"
-                  >
-                    Visit Live Project →
-                  </a>
-                </div>
-              )}
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              {tag}
+            </span>
+          ))}
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
     </>
   );
 }
