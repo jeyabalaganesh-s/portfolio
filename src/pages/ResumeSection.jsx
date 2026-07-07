@@ -6,16 +6,16 @@ const skills = ["React", "Node.js", "MongoDB", "AI/ML", "Tailwind", "SaaS"];
 
 const experiences = [
   {
-    role: "Full Stack Developer",
-    company: "Leada360",
-    period: "2025 - Present",
-    desc: "Built SaaS solutions including CRM, patient management, and AI integrations.",
+    role: "Full stack Developer",
+    company: "Freelance",
+    period: "Feb 2026 - Present",
+    desc: "Created responsive web applications using React, Tailwind, and APIs.",
   },
   {
-    role: "Frontend Developer",
-    company: "Freelance",
-    period: "2022 - 2025",
-    desc: "Created responsive web applications using React, Tailwind, and APIs.",
+    role: "Full Stack Developer",
+    company: "Leada360",
+    period: "May 2025 - Feb 2026",
+    desc: "Built SaaS solutions including CRM, patient management, and AI integrations.",
   },
 ];
 
