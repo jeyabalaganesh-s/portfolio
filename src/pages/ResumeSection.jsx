@@ -13,7 +13,7 @@ const experiences = [
   },
   {
     role: "Full Stack Developer",
-    company: "Leada360",
+    company: "Leada Digital Dynamics",
     period: "May 2025 - Feb 2026",
     desc: "Built SaaS solutions including CRM, patient management, and AI integrations.",
   },
