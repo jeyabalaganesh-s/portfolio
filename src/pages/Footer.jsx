@@ -56,7 +56,7 @@ const Footer = () => {
           </a>
 
           <a
-            href="https://jeyabalaganesh.in"
+            href="https://jeyabalaganesh.site"
             target="_blank"
             rel="noopener noreferrer"
             className="text-white/60 hover:text-orange-500 transition-all duration-300 hover:-translate-y-1"

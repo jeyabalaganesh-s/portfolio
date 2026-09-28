@@ -3,7 +3,7 @@
 
   <!-- Home Page -->
   <url>
-    <loc>https://jeyabalaganesh.in/</loc>
+    <loc>https://jeyabalaganesh.site/</loc>
     <lastmod>2025-08-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
@@ -11,7 +11,7 @@
 
   <!-- Projects Page -->
   <url>
-    <loc>https://jeyabalaganesh.in/projects</loc>
+    <loc>https://jeyabalaganesh.site/projects</loc>
     <lastmod>2025-08-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -19,7 +19,7 @@
 
   <!-- About Page -->
   <url>
-    <loc>https://jeyabalaganesh.in/about</loc>
+    <loc>https://jeyabalaganesh.site/about</loc>
     <lastmod>2025-08-30</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
@@ -27,7 +27,7 @@
 
   <!-- Contact Page -->
   <url>
-    <loc>https://jeyabalaganesh.in/contact</loc>
+    <loc>https://jeyabalaganesh.site/contact</loc>
     <lastmod>2025-08-30</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>

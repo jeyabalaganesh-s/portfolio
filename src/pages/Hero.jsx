@@ -53,7 +53,7 @@ useEffect(() => {
     { icon: FaLinkedin, url: "https://www.linkedin.com/in/jeyabalaganesh-s/" },
     { icon: FaInstagram, url: "https://www.instagram.com/jeyabalaganesh.s/" },
     { icon: FaTwitter, url: "https://x.com/jeyabalaganesh3" },
-    { icon: FaGlobe, url: "https://jeyabalaganesh.in/" },
+    { icon: FaGlobe, url: "https://jeyabalaganesh.site/" },
   ];
 
   return (
