@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Navbar from './pages/Navbar';
 import Hero from './pages/Hero';
 import Services from './pages/Services';
 import Portfolio from './pages/Portfolio';
@@ -23,7 +22,6 @@ export default function App() {
 
   return (
     <div className="bg-black text-white min-h-screen flex flex-col">
-      <Navbar />
       <main className="flex-grow">
         <Hero />
         <About />

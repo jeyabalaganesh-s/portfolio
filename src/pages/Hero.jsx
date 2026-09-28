@@ -1,259 +1,1125 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
+
 import {
   FaEnvelope,
   FaGithub,
   FaLinkedin,
   FaInstagram,
   FaTwitter,
-  FaGlobe,
 } from "react-icons/fa";
+
 import Hero3D from "./Hero3D";
-
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.3,
-      delayChildren: 0.5,
-    },
-  },
-};
-
-const item = {
-  hidden: { y: 40, opacity: 0 },
-  show: {
-    y: 0,
-    opacity: 1,
-    transition: { duration: 0.8, ease: "easeOut" },
-  },
-};
 
 export default function Hero() {
   const roles = [
     "Full-Stack Developer",
-    "SaaS Architect",
-    "AI Enthusiast",
+    "SaaS Builder",
+    "AI Systems Developer",
   ];
 
-  const [index, setIndex] = useState(0);
+  const [roleIndex, setRoleIndex] = useState(0);
 
-useEffect(() => {
-  const interval = setInterval(() => {
-    setIndex((prev) => (prev + 1) % roles.length);
-  }, 2500);
+  // =========================================================
+  // ROLE ROTATION
+  // =========================================================
 
-  return () => clearInterval(interval);
-}, [roles.length]);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRoleIndex((prev) => (prev + 1) % roles.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [roles.length]);
+
+  // =========================================================
+  // MOUSE INTERACTION
+  // =========================================================
+
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const smoothX = useSpring(mouseX, {
+    stiffness: 120,
+    damping: 20,
+    mass: 0.5,
+  });
+
+  const smoothY = useSpring(mouseY, {
+    stiffness: 120,
+    damping: 20,
+    mass: 0.5,
+  });
+
+  // 3D model subtle parallax
+  const modelX = useTransform(
+    smoothX,
+    [-500, 500],
+    [-12, 12]
+  );
+
+  const modelY = useTransform(
+    smoothY,
+    [-500, 500],
+    [-8, 8]
+  );
+
+  // Name parallax
+  const firstNameX = useTransform(
+    smoothX,
+    [-500, 500],
+    [-4, 4]
+  );
+
+  const lastNameX = useTransform(
+    smoothX,
+    [-500, 500],
+    [4, -4]
+  );
+
+  // Background spotlight
+  const spotlightX = useTransform(
+    smoothX,
+    [-window.innerWidth / 2, window.innerWidth / 2],
+    [-150, 150]
+  );
+
+  const spotlightY = useTransform(
+    smoothY,
+    [-window.innerHeight / 2, window.innerHeight / 2],
+    [-150, 150]
+  );
+
+  const handleMouseMove = (e) => {
+    const x =
+      e.clientX - window.innerWidth / 2;
+
+    const y =
+      e.clientY - window.innerHeight / 2;
+
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  // =========================================================
+  // SOCIAL LINKS
+  // =========================================================
 
   const links = [
-    { icon: FaEnvelope, url: "mailto:jeyabalaganesh2003@gmail.com" },
-    { icon: FaGithub, url: "https://github.com/jeyabalaganesh-s" },
-    { icon: FaLinkedin, url: "https://www.linkedin.com/in/jeyabalaganesh-s/" },
-    { icon: FaInstagram, url: "https://www.instagram.com/jeyabalaganesh.s/" },
-    { icon: FaTwitter, url: "https://x.com/jeyabalaganesh3" },
-    { icon: FaGlobe, url: "https://jeyabalaganesh.site/" },
+    {
+      icon: FaGithub,
+      label: "GitHub",
+      url: "https://github.com/jeyabalaganesh-s",
+    },
+    {
+      icon: FaLinkedin,
+      label: "LinkedIn",
+      url: "https://www.linkedin.com/in/jeyabalaganesh-s/",
+    },
+    {
+      icon: FaInstagram,
+      label: "Instagram",
+      url: "https://www.instagram.com/jeyabalaganesh.s/",
+    },
+    {
+      icon: FaTwitter,
+      label: "X",
+      url: "https://x.com/jeyabalaganesh3",
+    },
+    {
+      icon: FaEnvelope,
+      label: "Email",
+      url: "mailto:jeyabalaganesh2003@gmail.com",
+    },
   ];
 
   return (
     <section
       id="hero"
-      className="relative min-h-screen bg-black text-white px-4 sm:px-6 lg:px-20 overflow-hidden"
+      onMouseMove={handleMouseMove}
+      className="
+        relative
+        min-h-screen
+        overflow-hidden
+        bg-[#080808]
+        text-white
+        flex
+        items-center
+      "
     >
-      {/* ================= MOBILE HERO ================= */}
-      {/* ================= MOBILE HERO ================= */}
-<div className="lg:hidden absolute inset-0 z-0">
 
-  {/* 3D MODEL CENTERED */}
-  <div className="absolute inset-0 top-[20vh] flex items-center justify-center">
-    <Hero3D />
-  </div>
+      {/* =====================================================
+          BACKGROUND GRID
+      ====================================================== */}
 
-  {/* CINEMATIC GRADIENT OVERLAY */}
-  <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black" />
+      <div
+        className="
+          absolute
+          inset-0
+          opacity-[0.035]
+          pointer-events-none
+          bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)]
+          bg-[size:80px_80px]
+        "
+      />
 
-  {/* HELLO TEXT */}
-  <motion.div
-    initial={{ opacity: 0, y: -20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.8 }}
-    className="absolute top-[18vh] left-6 text-orange-400 text-lg"
-  >
-    Hello! I’m
-  </motion.div>
+      {/* =====================================================
+          MOUSE ORANGE SPOTLIGHT
+      ====================================================== */}
 
-  {/* BIG NAME */}
-  <motion.h1
-    initial={{ opacity: 0, y: -20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.8, delay: 0.2 }}
-    className="absolute top-[22vh] left-6 text-4xl font-bold uppercase text-white"
-  >
-    JEYABALAGANESH S
-  </motion.h1>
+      <motion.div
+        style={{
+          x: spotlightX,
+          y: spotlightY,
+        }}
+        className="
+          absolute
+          left-1/2
+          top-1/2
+          w-[520px]
+          h-[520px]
+          -translate-x-1/2
+          -translate-y-1/2
+          rounded-full
+          bg-orange-500/[0.045]
+          blur-[130px]
+          pointer-events-none
+        "
+      />
 
-  {/* BOTTOM TITLE */}
-  <div className="absolute bottom-24 w-full text-center">
-    <p className="text-orange-400 text-lg tracking-widest">
-      A Creative
-    </p>
+      {/* =====================================================
+          3D MODEL AMBIENT GLOW
+      ====================================================== */}
 
-    <AnimatePresence mode="wait">
-      <motion.h2
-        key={roles[index]}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.6 }}
-        className="text-4xl font-extrabold text-white"
+      <div
+        className="
+          absolute
+          right-[13%]
+          top-[25%]
+          w-[320px]
+          h-[320px]
+          rounded-full
+          bg-orange-500/[0.035]
+          blur-[120px]
+          pointer-events-none
+        "
+      />
+
+      {/* =====================================================
+          TOP NAVIGATION
+      ====================================================== */}
+
+      <div
+        className="
+          absolute
+          top-0
+          left-0
+          right-0
+          z-30
+          px-6
+          md:px-10
+          lg:px-16
+          py-7
+          flex
+          items-center
+          justify-between
+        "
       >
-        {roles[index].split(" ")[0]}
-        <br />
-        {roles[index].split(" ").slice(1).join(" ")}
-      </motion.h2>
-    </AnimatePresence>
-  </div>
-</div>
 
-      {/* ================= DESKTOP HERO (UNCHANGED) ================= */}
-      <div className="w-full grid grid-cols-1 lg:grid-cols-[1fr_350px] items-center relative z-10">
+        {/* LOGO */}
 
-        {/* LEFT SIDE */}
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="relative flex flex-col items-center lg:items-start text-center lg:text-left"
+        <motion.a
+          href="#hero"
+          whileHover={{
+            scale: 1.05,
+          }}
+          transition={{
+            duration: 0.2,
+          }}
+          className="
+            text-sm
+            font-semibold
+            tracking-[0.25em]
+            uppercase
+          "
+        >
+          JG
+          <span className="text-orange-500">
+            .
+          </span>
+        </motion.a>
+
+
+        {/* NAVIGATION */}
+
+        <nav className="hidden md:flex items-center gap-8">
+
+          {[
+            ["About", "#about"],
+            ["Work", "#portfolio"],
+            ["Contact", "#contact"],
+          ].map(([label, href]) => (
+
+            <motion.a
+              key={label}
+              href={href}
+              whileHover={{
+                y: -2,
+              }}
+              className="
+                group
+                relative
+                text-xs
+                uppercase
+                tracking-[0.18em]
+                text-neutral-500
+                hover:text-white
+                transition-colors
+                duration-300
+              "
+            >
+              {label}
+
+              <span
+                className="
+                  absolute
+                  -bottom-2
+                  left-0
+                  w-0
+                  h-[1px]
+                  bg-orange-500
+                  transition-all
+                  duration-300
+                  group-hover:w-full
+                "
+              />
+
+            </motion.a>
+
+          ))}
+
+        </nav>
+
+
+        {/* AVAILABLE */}
+
+        <div className="flex items-center gap-2">
+
+          <span
+            className="
+              relative
+              flex
+              h-2
+              w-2
+            "
+          >
+
+            <span
+              className="
+                absolute
+                inline-flex
+                h-full
+                w-full
+                rounded-full
+                bg-orange-500
+                opacity-60
+                animate-ping
+              "
+            />
+
+            <span
+              className="
+                relative
+                inline-flex
+                h-2
+                w-2
+                rounded-full
+                bg-orange-500
+              "
+            />
+
+          </span>
+
+          <span
+            className="
+              text-[10px]
+              uppercase
+              tracking-[0.2em]
+              text-neutral-500
+            "
+          >
+            Available
+          </span>
+
+        </div>
+
+      </div>
+
+
+      {/* =====================================================
+          MAIN CONTENT
+      ====================================================== */}
+
+      <div
+        className="
+          relative
+          z-10
+          w-full
+          max-w-[1600px]
+          mx-auto
+          px-6
+          md:px-10
+          lg:px-16
+          pt-24
+        "
+      >
+
+        <div
+          className="
+            grid
+            grid-cols-1
+            lg:grid-cols-[1.15fr_0.85fr]
+            min-h-[calc(100vh-100px)]
+            items-center
+          "
         >
 
-          {/* DESKTOP 3D */}
-          <motion.div
-  variants={item}
-  className="hidden lg:block relative w-[260px] sm:w-[380px] md:w-[480px] 
-  lg:w-[650px] mx-auto lg:mx-0"
->
-  <div className="w-full relative left-[30vw] top-[20vh] h-[600px] flex items-center justify-center">
-    <Hero3D />
-  </div>
-</motion.div>
+          {/* =================================================
+              LEFT CONTENT
+          ================================================== */}
 
-          {/* TEXT OVERLAY (DESKTOP ONLY) */}
-          <motion.div
-            variants={container}
-            className="hidden lg:flex flex-col items-start space-y-6 
-            absolute left-0 top-1/2 -translate-y-1/2 max-w-[45vw]"
+          <div
+            className="
+              relative
+              z-20
+              max-w-4xl
+            "
           >
+
+            {/* EYEBROW */}
+
             <motion.div
-              variants={item}
-              className="text-sm tracking-[0.4em] text-gray-400 "
+              initial={{
+                opacity: 0,
+                y: 20,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              transition={{
+                duration: 0.7,
+                delay: 0.2,
+              }}
+              className="
+                flex
+                items-center
+                gap-4
+                mb-7
+              "
             >
-              Hello I’m
+
+              <span
+                className="
+                  w-10
+                  h-[1px]
+                  bg-orange-500
+                "
+              />
+
+              <span
+                className="
+                  text-[11px]
+                  uppercase
+                  tracking-[0.35em]
+                  text-neutral-500
+                "
+              >
+                Software Developer
+              </span>
+
             </motion.div>
 
-            <motion.h1
-              variants={item}
-              className="text-6xl font-extrabold leading-tight 
-              bg-orange-500
-              bg-clip-text text-transparent uppercase"
+
+            {/* =================================================
+                NAME
+            ================================================== */}
+
+            <motion.div
+              initial={{
+                opacity: 0,
+                y: 40,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              transition={{
+                duration: 0.9,
+                delay: 0.35,
+                ease: [0.16, 1, 0.3, 1],
+              }}
             >
-              Jeyabalaganesh s
-            </motion.h1>
 
-            <div className="h-[50px] overflow-hidden">
-              <AnimatePresence mode="wait">
+              {/* JEYABALA */}
+
+              <motion.h1
+                style={{
+                  x: firstNameX,
+                }}
+                className="
+                  text-[15vw]
+                  sm:text-[12vw]
+                  lg:text-[8vw]
+                  xl:text-[7.5vw]
+                  font-black
+                  uppercase
+                  leading-[0.82]
+                  tracking-[-0.07em]
+                  whitespace-nowrap
+                  text-white
+                "
+              >
+                JEYABALA
+              </motion.h1>
+
+
+              {/* GANESH */}
+
+              <motion.h1
+                style={{
+                  x: lastNameX,
+                }}
+                className="
+                  text-[15vw]
+                  sm:text-[12vw]
+                  lg:text-[8vw]
+                  xl:text-[7.5vw]
+                  font-black
+                  uppercase
+                  leading-[0.82]
+                  tracking-[-0.07em]
+                  text-transparent
+                  [-webkit-text-stroke:1px_#444]
+                  hover:[-webkit-text-stroke:1px_#ff5a00]
+                  transition-all
+                  duration-500
+                "
+              >
+                GANESH
+
+                <span className="text-orange-500">
+                  .
+                </span>
+
+              </motion.h1>
+
+            </motion.div>
+
+
+            {/* =================================================
+                ROLE
+            ================================================== */}
+
+            <div className="mt-10">
+
+              <AnimatePresence
+                mode="wait"
+              >
+
                 <motion.div
-                  key={roles[index]}
-                  initial={{ y: 50, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -50, opacity: 0 }}
-                  transition={{ duration: 0.6 }}
-                  className="text-3xl font-semibold text-white relative"
+                  key={roles[roleIndex]}
+                  initial={{
+                    opacity: 0,
+                    y: 20,
+                    filter: "blur(8px)",
+                  }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    filter: "blur(0px)",
+                  }}
+                  exit={{
+                    opacity: 0,
+                    y: -20,
+                    filter: "blur(8px)",
+                  }}
+                  transition={{
+                    duration: 0.5,
+                  }}
+                  className="
+                    text-xl
+                    sm:text-2xl
+                    lg:text-3xl
+                    font-medium
+                    text-neutral-300
+                  "
                 >
-                  {roles[index]}
-
-                  <motion.div
-                    layoutId="underline"
-                    className="h-[3px] bg-gradient-to-r from-orange-500 to-pink-500 mt-2"
-                    initial={{ width: 0 }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: 0.6 }}
-                  />
+                  {roles[roleIndex]}
                 </motion.div>
+
               </AnimatePresence>
+
             </div>
 
+
+            {/* =================================================
+                DESCRIPTION
+            ================================================== */}
+
             <motion.p
-              variants={item}
-              className="text-gray-400 text-lg leading-relaxed max-w-xl"
+              initial={{
+                opacity: 0,
+                y: 20,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              transition={{
+                duration: 0.8,
+                delay: 0.8,
+              }}
+              className="
+                mt-6
+                max-w-xl
+                text-sm
+                sm:text-base
+                leading-7
+                text-neutral-500
+              "
             >
-              I build scalable SaaS platforms, AI-powered systems and automation-driven
-              digital products with performance and clean architecture.
+              I build scalable SaaS platforms,
+              AI-powered systems and automation-driven
+              digital products with clean architecture
+              and meaningful user experiences.
             </motion.p>
-          </motion.div>
-        </motion.div>
-        <motion.div
-          variants={container}
-          className="hidden lg:block"
-        >
-          {/* RIGHT SIDE */}
-          <motion.div
-            variants={container}
-            initial="hidden"
-            animate="show"
-            className="space-y-10 max-w-sm mx-auto lg:mx-0 mt-12 lg:mt-0 text-center lg:text-left"
-          >
-            <motion.div
-              variants={item}
-              className="space-y-2 border-b border-gray-700 pb-6"
-            >
-              <h3 className="text-lg font-bold">ABOUT ME</h3>
-              <p className="text-gray-400">
-                Passionate about building scalable SaaS products, AI systems,
-                automation workflows, and modern digital experiences.
-              </p>
-              <a href="#about" className="text-orange-400 hover:underline">
-                Learn More →
-              </a>
-            </motion.div>
+
+
+            {/* =================================================
+                BUTTONS
+            ================================================== */}
 
             <motion.div
-              variants={item}
-              className="space-y-2 border-b border-gray-700 pb-6"
+              initial={{
+                opacity: 0,
+                y: 20,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              transition={{
+                duration: 0.8,
+                delay: 1,
+              }}
+              className="
+                mt-9
+                flex
+                flex-wrap
+                items-center
+                gap-4
+              "
             >
-              <h3 className="text-lg font-bold">MY WORK</h3>
-              <p className="text-gray-400">
-                Explore CRM systems, Expo OS, AI Agents, automation tools,
-                and full-stack SaaS platforms.
-              </p>
-              <a href="#projects" className="text-orange-400 hover:underline">
-                Browse Portfolio →
-              </a>
-            </motion.div>
 
-          </motion.div>
+              {/* EXPLORE */}
 
-          <motion.div
-            variants={item}
-            className="flex justify-center lg:justify-start space-x-6 text-2xl"
-          >
-            {links.map((link, i) => {
-              const Icon = link.icon;
-              return (
-                <motion.a
-                  key={i}
-                  whileHover={{ scale: 1.2 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="text-gray-400 hover:text-orange-500 transition-colors"
-                  href={link.url}
+              <motion.a
+                href="#portfolio"
+                whileHover={{
+                  scale: 1.03,
+                }}
+                whileTap={{
+                  scale: 0.97,
+                }}
+                className="
+                  group
+                  relative
+                  overflow-hidden
+                  flex
+                  items-center
+                  gap-3
+                  px-6
+                  py-3.5
+                  bg-orange-500
+                  text-black
+                  text-xs
+                  font-bold
+                  uppercase
+                  tracking-[0.15em]
+                "
+              >
+
+                <span className="relative z-10">
+                  Explore Work
+                </span>
+
+                <span
+                  className="
+                    relative
+                    z-10
+                    text-lg
+                    transition-transform
+                    duration-300
+                    group-hover:translate-x-1
+                  "
                 >
-                  <Icon />
-                </motion.a>
-              );
-            })}
-          </motion.div>
-        </motion.div>
+                  →
+                </span>
+
+                {/* Hover layer */}
+
+                <span
+                  className="
+                    absolute
+                    inset-0
+                    bg-white
+                    translate-y-full
+                    group-hover:translate-y-0
+                    transition-transform
+                    duration-300
+                  "
+                />
+
+              </motion.a>
+
+
+              {/* LET'S TALK */}
+
+              <motion.a
+                href="#contact"
+                whileHover={{
+                  x: 5,
+                }}
+                className="
+                  flex
+                  items-center
+                  gap-3
+                  px-3
+                  py-3
+                  text-xs
+                  uppercase
+                  tracking-[0.15em]
+                  text-neutral-400
+                  hover:text-white
+                  transition-colors
+                "
+              >
+                Let's Talk
+
+                <span
+                  className="
+                    text-orange-500
+                  "
+                >
+                  ↗
+                </span>
+
+              </motion.a>
+
+            </motion.div>
+
+
+            {/* =================================================
+                SOCIAL ICONS
+            ================================================== */}
+
+            <motion.div
+              initial={{
+                opacity: 0,
+              }}
+              animate={{
+                opacity: 1,
+              }}
+              transition={{
+                delay: 1.3,
+                duration: 0.8,
+              }}
+              className="
+                mt-12
+                flex
+                items-center
+                gap-5
+              "
+            >
+
+              {links.map((link) => {
+
+                const Icon = link.icon;
+
+                return (
+                  <motion.a
+                    key={link.label}
+                    href={link.url}
+                    target={
+                      link.url.startsWith("http")
+                        ? "_blank"
+                        : undefined
+                    }
+                    rel={
+                      link.url.startsWith("http")
+                        ? "noopener noreferrer"
+                        : undefined
+                    }
+                    whileHover={{
+                      y: -4,
+                      color: "#ff5a00",
+                    }}
+                    transition={{
+                      duration: 0.2,
+                    }}
+                    className="
+                      text-neutral-600
+                      text-lg
+                    "
+                    aria-label={link.label}
+                  >
+                    <Icon />
+                  </motion.a>
+                );
+
+              })}
+
+            </motion.div>
+
+          </div>
+
+
+          {/* =================================================
+              RIGHT / 3D
+          ================================================== */}
+
+          <div
+            className="
+              relative
+              hidden
+              lg:flex
+              h-[700px]
+              items-center
+              justify-center
+            "
+          >
+
+            {/* OUTER CIRCLE */}
+
+            <motion.div
+              style={{
+                rotate: useTransform(
+                  smoothX,
+                  [-500, 500],
+                  [-4, 4]
+                ),
+              }}
+              className="
+                absolute
+                w-[480px]
+                h-[480px]
+                rounded-full
+                border
+                border-white/[0.07]
+              "
+            />
+
+
+            {/* INNER CIRCLE */}
+
+            <motion.div
+              style={{
+                scale: useTransform(
+                  smoothX,
+                  [-500, 500],
+                  [0.98, 1.02]
+                ),
+              }}
+              className="
+                absolute
+                w-[350px]
+                h-[350px]
+                rounded-full
+                border
+                border-orange-500/[0.12]
+              "
+            />
+
+
+            {/* ROTATING ORANGE RING */}
+
+            <motion.div
+              animate={{
+                rotate: 360,
+              }}
+              transition={{
+                duration: 25,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+              className="
+                absolute
+                w-[500px]
+                h-[500px]
+                rounded-full
+                border-t
+                border-orange-500/40
+              "
+            />
+
+
+            {/* SMALL ORANGE ORBIT DOT */}
+
+            <motion.div
+              animate={{
+                rotate: 360,
+              }}
+              transition={{
+                duration: 12,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+              className="
+                absolute
+                w-[500px]
+                h-[500px]
+                rounded-full
+              "
+            >
+
+              <span
+                className="
+                  absolute
+                  top-0
+                  left-1/2
+                  -translate-x-1/2
+                  w-2
+                  h-2
+                  rounded-full
+                  bg-orange-500
+                  shadow-[0_0_20px_rgba(255,90,0,0.6)]
+                "
+              />
+
+            </motion.div>
+
+
+            {/* =================================================
+                3D MODEL
+            ================================================== */}
+
+            <motion.div
+              style={{
+                x: modelX,
+                y: modelY,
+              }}
+              className="
+                relative
+                z-10
+                w-[600px]
+                h-[700px]
+              "
+            >
+              <Hero3D />
+            </motion.div>
+
+
+            {/* =================================================
+                RIGHT FLOATING LABEL
+            ================================================== */}
+
+            <motion.div
+              initial={{
+                opacity: 0,
+                x: 30,
+              }}
+              animate={{
+                opacity: 1,
+                x: 0,
+              }}
+              transition={{
+                delay: 1.2,
+                duration: 0.8,
+              }}
+              className="
+                absolute
+                right-0
+                top-[25%]
+                z-20
+                flex
+                items-center
+                gap-3
+                text-[10px]
+                uppercase
+                tracking-[0.2em]
+                text-neutral-600
+              "
+            >
+
+              <span
+                className="
+                  w-8
+                  h-[1px]
+                  bg-neutral-700
+                "
+              />
+
+              Building digital products
+
+            </motion.div>
+
+
+            {/* =================================================
+                BOTTOM FLOATING LABEL
+            ================================================== */}
+
+            <motion.div
+              initial={{
+                opacity: 0,
+                x: -30,
+              }}
+              animate={{
+                opacity: 1,
+                x: 0,
+              }}
+              transition={{
+                delay: 1.4,
+                duration: 0.8,
+              }}
+              className="
+                absolute
+                left-0
+                bottom-[20%]
+                z-20
+                flex
+                items-center
+                gap-3
+                text-[10px]
+                uppercase
+                tracking-[0.2em]
+                text-neutral-600
+              "
+            >
+
+              Code
+
+              <span
+                className="
+                  w-8
+                  h-[1px]
+                  bg-neutral-700
+                "
+              />
+
+              Create
+
+            </motion.div>
+
+          </div>
+
+        </div>
+
       </div>
+
+
+      {/* =====================================================
+          SCROLL INDICATOR
+      ====================================================== */}
+
+      <motion.div
+        initial={{
+          opacity: 0,
+        }}
+        animate={{
+          opacity: 1,
+        }}
+        transition={{
+          delay: 1.8,
+        }}
+        className="
+          absolute
+          bottom-7
+          left-6
+          md:left-10
+          lg:left-16
+          z-20
+          flex
+          items-center
+          gap-4
+        "
+      >
+
+        <div
+          className="
+            relative
+            w-5
+            h-8
+            border
+            border-neutral-700
+            rounded-full
+            flex
+            justify-center
+            pt-1.5
+          "
+        >
+
+          <motion.span
+            animate={{
+              y: [0, 8, 0],
+              opacity: [1, 0.3, 1],
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+            }}
+            className="
+              w-[2px]
+              h-1.5
+              bg-orange-500
+              rounded-full
+            "
+          />
+
+        </div>
+
+
+        <span
+          className="
+            hidden
+            sm:block
+            text-[9px]
+            uppercase
+            tracking-[0.3em]
+            text-neutral-600
+          "
+        >
+          Scroll to explore
+        </span>
+
+      </motion.div>
+
+
+      {/* =====================================================
+          PAGE NUMBER
+      ====================================================== */}
+
+      <div
+        className="
+          absolute
+          bottom-8
+          right-6
+          md:right-10
+          lg:right-16
+          text-[10px]
+          tracking-[0.2em]
+          text-neutral-700
+        "
+      >
+        01 / 05
+      </div>
+
     </section>
   );
 }

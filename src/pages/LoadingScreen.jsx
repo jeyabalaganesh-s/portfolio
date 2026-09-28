@@ -1,60 +1,199 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { motion } from "framer-motion";
 
 export default function LoadingScreen({ onFinish }) {
-  const [progress, setProgress] = useState(0);
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      onFinish();
+    }, 1200);
 
-  useEffect(() => {
-    let value = 0;
-
-    const interval = setInterval(() => {
-      value += 2;
-      setProgress(value);
-
-      if (value >= 100) {
-        clearInterval(interval);
-        setTimeout(() => {
-          onFinish();
-        }, 400);
-      }
-    }, 50);
-
-    return () => clearInterval(interval);
+    return () => clearTimeout(timer);
   }, [onFinish]);
 
   return (
-    <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-[9999]">
+    <motion.div
+      initial={{ opacity: 1 }}
+      animate={{ opacity: 1 }}
+      exit={{
+        opacity: 0,
+        scale: 1.02,
+      }}
+      transition={{
+        duration: 1,
+        ease: [0.76, 0, 0.24, 1],
+      }}
+      className="
+        fixed
+        inset-0
+        z-[9999]
+        bg-[#050505]
+        text-white
+        overflow-hidden
+        flex
+        items-center
+        justify-center
+      "
+    >
+      {/* Subtle grid */}
+      <div
+        className="
+          absolute
+          inset-0
+          opacity-[0.025]
+          pointer-events-none
+          bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)]
+          bg-[size:80px_80px]
+        "
+      />
 
-      {/* TITLE */}
-      <h1 className="text-white text-lg tracking-[0.4em] uppercase mb-16">
-        Booting Portfolio
-      </h1>
+      {/* Main typography */}
+      <div className="relative z-10 w-full px-6 md:px-10 lg:px-16">
+        
+        {/* Small label */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="
+            mb-6
+            text-center
+            text-[10px]
+            md:text-xs
+            uppercase
+            tracking-[0.5em]
+            text-neutral-600
+          "
+        >
+          Welcome to my
+        </motion.div>
 
-      {/* CIRCLE WRAPPER */}
-      <div className="relative flex items-center justify-center">
-
-        {/* OUTER SPIN RING */}
-        <div className="w-40 h-40 rounded-full border-4 border-orange-500 border-t-transparent animate-spin" />
-
-        {/* INNER STATIC RING */}
-        <div className="absolute w-32 h-32 rounded-full border border-white/20" />
-
-        {/* PERCENTAGE CENTER */}
-        <div className="absolute text-center">
-          <p className="text-3xl font-bold text-orange-500">
-            {Math.min(progress, 100)}%
-          </p>
-          <p className="text-xs text-white/60 tracking-widest mt-2">
-            LOADING
-          </p>
+        {/* JEYABALAGANESH */}
+        <div className="overflow-hidden">
+          <motion.h1
+            initial={{
+              y: "100%",
+            }}
+            animate={{
+              y: 0,
+            }}
+            transition={{
+              duration: 0.9,
+              ease: [0.76, 0, 0.24, 1],
+            }}
+            className="
+              text-center
+              text-[13vw]
+              sm:text-[12vw]
+              md:text-[11vw]
+              lg:text-[9vw]
+              xl:text-[8.5vw]
+              font-black
+              uppercase
+              leading-[0.8]
+              tracking-[-0.07em]
+              whitespace-nowrap
+            "
+          >
+            JEYABALAGANESH
+            <span className="text-orange-500">.</span>
+          </motion.h1>
         </div>
 
+        {/* PORTFOLIO */}
+        <div className="overflow-hidden mt-4">
+          <motion.h2
+            initial={{
+              y: "100%",
+            }}
+            animate={{
+              y: 0,
+            }}
+            transition={{
+              duration: 0.9,
+              delay: 0.15,
+              ease: [0.76, 0, 0.24, 1],
+            }}
+            className="
+              text-center
+              text-[13vw]
+              sm:text-[12vw]
+              md:text-[11vw]
+              lg:text-[9vw]
+              xl:text-[8.5vw]
+              font-black
+              uppercase
+              leading-[0.8]
+              tracking-[-0.07em]
+              text-transparent
+              [-webkit-text-stroke:1px_#444]
+              md:[-webkit-text-stroke:2px_#444]
+            "
+          >
+            PORTFOLIO
+          </motion.h2>
+        </div>
+
+        {/* Bottom information */}
+        <motion.div
+          initial={{
+            opacity: 0,
+            y: 20,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          transition={{
+            duration: 0.7,
+            delay: 0.5,
+          }}
+          className="
+            mt-10
+            flex
+            items-center
+            justify-center
+            gap-4
+            text-[9px]
+            md:text-[10px]
+            uppercase
+            tracking-[0.3em]
+            text-neutral-600
+          "
+        >
+          <span>Full-Stack Developer</span>
+
+          <span className="w-1 h-1 rounded-full bg-orange-500" />
+
+          <span>AI · SaaS · Automation</span>
+        </motion.div>
       </div>
 
-      {/* SUBTEXT */}
-      <p className="text-white/40 text-sm mt-16 tracking-widest">
-        Preparing Experience...
-      </p>
+      {/* Corner details */}
+      <div
+        className="
+          absolute
+          bottom-6
+          left-6
+          text-[9px]
+          font-mono
+          text-neutral-800
+        "
+      >
+        JG / 2026
+      </div>
 
-    </div>
+      <div
+        className="
+          absolute
+          bottom-6
+          right-6
+          text-[9px]
+          font-mono
+          text-neutral-800
+        "
+      >
+        PORTFOLIO
+      </div>
+    </motion.div>
   );
 }
