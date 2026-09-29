@@ -6,8 +6,120 @@ import { motion, AnimatePresence } from "framer-motion";
 ========================================================= */
 
 const projects = [
+
+    {
+    title: "CRM",
+    image: "/images/projects/crm.png",
+    desc: "AI-First Healthcare CRM Platform",
+    category: "Healthcare / SaaS / AI",
+    preview:
+      "A full-stack CRM platform designed for healthcare professionals to manage contacts, leads, appointments, interactions, and business workflows from a centralized system.",
+    fullDesc: `
+CRM is a full-stack healthcare CRM platform designed to help healthcare professionals and teams manage their business relationships and daily workflows from a centralized system.
+
+The platform provides structured management of healthcare professionals, leads, appointments, interactions, and organizational activities with role-based access and scalable multi-tenant architecture.
+
+Key Features: Contact & healthcare professional management
+• Lead and enquiry management
+• Appointment scheduling
+• Interaction and activity tracking
+• Role-based access control
+• Multi-tenant architecture
+• Centralized analytics dashboard
+
+Tech Stack:
+React, TypeScript, FastAPI, Python, PostgreSQL, SQLAlchemy, Alembic
+
+Impact:
+Centralizes healthcare business operations into a scalable SaaS platform while reducing manual workflow and improving visibility across teams.
+`,
+    tags: [
+      "React",
+      "TypeScript",
+      "FastAPI",
+      "PostgreSQL",
+      "AI",
+      "SaaS",
+    ],
+  },
+
+  {
+    title: "JEMI",
+    image: "/images/projects/jemi.png",
+    desc: "AI-Powered Lead Qualification Agent",
+    category: "AI / Agents / CRM",
+    preview:
+      "An AI agent that automatically analyzes, qualifies, and prioritizes leads using conversational data and business-defined qualification criteria.",
+    fullDesc: `
+JEMI is an AI-powered lead qualification system designed to automate the initial evaluation of incoming leads.
+
+The AI agent analyzes lead information, understands conversational context, evaluates qualification criteria, and helps sales teams prioritize high-value opportunities.
+
+Key Features: AI-powered lead qualification
+• Conversational lead analysis
+• Automated lead scoring
+• Qualification based on business rules
+• Lead prioritization
+• Structured data extraction
+• CRM workflow integration
+• AI agent orchestration
+
+Tech Stack:
+React, TypeScript, Node.js, AI APIs, LangGraph
+
+Impact:
+Automates repetitive lead qualification workflows and helps sales teams focus their time on leads with higher potential.
+`,
+    tags: [
+      "AI Agent",
+      "LangGraph",
+      "React",
+      "TypeScript",
+      "Node.js",
+      "CRM",
+    ],
+  },
+
+  {
+    title: "Event OS",
+    image: "/images/projects/event-os.png",
+    desc: "Complete Event Monitoring & Management Platform",
+    category: "Event Tech / SaaS",
+    preview:
+      "A centralized event operations platform for planning, monitoring, and managing complete event workflows, activities, teams, and real-time operational status.",
+    fullDesc: `
+Event OS is a centralized event operations platform designed to monitor and manage the complete lifecycle of an event from a single dashboard.
+
+The platform brings event planning, task management, team coordination, schedules, activities, and real-time monitoring into one operational workspace.
+
+Key Features: Complete event lifecycle management
+• Event planning and scheduling
+• Real-time event monitoring
+• Task and activity management
+• Team and role management
+• Event status tracking
+• Centralized operations dashboard
+• Notifications and alerts
+• Analytics and reporting
+
+Tech Stack:
+React, TypeScript, Node.js, Express, MongoDB
+
+Impact:
+Provides a centralized command center for event teams to coordinate operations, monitor progress, and manage events more efficiently.
+`,
+    tags: [
+      "React",
+      "TypeScript",
+      "Node.js",
+      "MongoDB",
+      "SaaS",
+      "Event OS",
+    ],
+  },
   {
     title: "Websence AI",
+    image: "/images/projects/websenseai.png",
     desc: "Opinion Mining + Generative AI Platform",
     category: "AI / NLP",
     preview:
@@ -38,6 +150,7 @@ Automates large-scale text analysis and enhances decision-making using AI.
   {
     title: "Token Management Portal",
     desc: "Healthcare Queue & Appointment System",
+    image: "/images/projects/token.png",
     category: "Healthcare / SaaS",
     preview:
       "A healthcare SaaS application that streamlines appointment scheduling and patient queue management for clinics and hospitals.",
@@ -67,6 +180,7 @@ Enhances operational efficiency and reduces manual scheduling overhead.
     title: "Lone Wolf",
     desc: "Full-stack E-commerce Platform",
     category: "E-commerce",
+    image: "/images/projects/lonewolf.png",
     preview:
       "A complete e-commerce solution built using PHP and MySQL, featuring product management, shopping cart functionality, and secure checkout.",
     fullDesc: `
@@ -90,9 +204,12 @@ Delivered a functional online retail platform with scalable backend logic.
     tags: ["PHP", "MySQL", "E-commerce"],
   },
 
+
+
   {
     title: "Blismera Shop",
     desc: "Custom Jewelry E-commerce Platform",
+    image: "/images/projects/blismera.png",
     category: "E-commerce / UI",
     preview:
       "A modern jewelry e-commerce platform specializing in custom-designed bracelets and accessories, featuring dynamic product customization and responsive UI design.",
@@ -120,6 +237,7 @@ Provides a modern and visually engaging online shopping experience.
   {
     title: "DiGi School Portal",
     desc: "School Management SaaS Platform",
+    image: "/images/projects/digi-school.png",
     category: "Education / SaaS",
     preview:
       "A centralized education management system that digitizes student records, attendance tracking, staff management, and academic reporting for educational institutions.",
@@ -152,23 +270,25 @@ Improves operational efficiency for educational institutions.
    PROJECT VISUAL
 ========================================================= */
 
-function ProjectVisual({ index, active }) {
-  const gradients = [
-    "from-orange-500/20 via-orange-500/5 to-transparent",
-    "from-orange-400/15 via-white/5 to-transparent",
-    "from-white/10 via-orange-500/10 to-transparent",
-    "from-orange-500/15 via-transparent to-white/5",
-    "from-white/10 via-orange-500/10 to-transparent",
-  ];
-
+function ProjectVisual({ project, index, active }) {
   return (
-    <div className="relative w-full h-[250px] xl:h-[300px] overflow-hidden border border-white/[0.08] bg-[#0b0b0b]">
+    <div className="relative w-full h-[250px] xl:h-[300px] overflow-hidden border border-white/[0.08] bg-[#0b0b0b] group">
 
-      {/* Background gradient */}
-      <motion.div
-        className={`absolute inset-0 bg-gradient-to-br ${gradients[index]}`}
+      {/* Project Image */}
+      <motion.img
+        src={project.image}
+        alt={project.title}
+        className="
+          absolute
+          inset-0
+          w-full
+          h-full
+          object-cover
+          transition-transform
+          duration-700
+        "
         animate={{
-          scale: active ? 1.08 : 1,
+          scale: active ? 1.06 : 1,
         }}
         transition={{
           duration: 0.8,
@@ -176,52 +296,42 @@ function ProjectVisual({ index, active }) {
         }}
       />
 
-      {/* Grid */}
+      {/* Dark overlay */}
+      <div
+        className={`
+          absolute
+          inset-0
+          bg-black/35
+          transition-all
+          duration-500
+          ${active ? "bg-black/20" : "bg-black/40"}
+        `}
+      />
+
+      {/* Orange gradient */}
       <div
         className="
-          absolute inset-0
-          opacity-[0.07]
+          absolute
+          inset-0
+          bg-gradient-to-br
+          from-orange-500/20
+          via-transparent
+          to-black/50
+          pointer-events-none
+        "
+      />
+
+      {/* Grid overlay */}
+      <div
+        className="
+          absolute
+          inset-0
+          opacity-[0.08]
+          pointer-events-none
           bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)]
           bg-[size:40px_40px]
         "
       />
-
-      {/* Main orbital circle */}
-      <motion.div
-        animate={
-          active
-            ? {
-                rotate: 8,
-                scale: 1.08,
-              }
-            : {
-                rotate: 0,
-                scale: 1,
-              }
-        }
-        transition={{
-          duration: 0.7,
-          ease: [0.16, 1, 0.3, 1],
-        }}
-        className="
-          absolute
-          left-1/2
-          top-1/2
-          -translate-x-1/2
-          -translate-y-1/2
-          w-44
-          h-44
-          xl:w-56
-          xl:h-56
-          rounded-full
-          border
-          border-orange-500/30
-        "
-      >
-        <div className="absolute inset-5 rounded-full border border-white/10" />
-
-        <div className="absolute inset-12 rounded-full bg-orange-500/[0.08] blur-xl" />
-      </motion.div>
 
       {/* Orange indicator */}
       <motion.div
@@ -250,7 +360,7 @@ function ProjectVisual({ index, active }) {
         "
       />
 
-      {/* Bottom project number */}
+      {/* Project number */}
       <div
         className="
           absolute
@@ -259,7 +369,8 @@ function ProjectVisual({ index, active }) {
           text-[9px]
           uppercase
           tracking-[0.3em]
-          text-white/30
+          text-white/60
+          z-10
         "
       >
         SYSTEM / {String(index + 1).padStart(2, "0")}
@@ -276,15 +387,17 @@ function ProjectVisual({ index, active }) {
           tracking-[0.3em]
           transition-colors
           duration-300
+          z-10
           ${
             active
               ? "text-orange-500"
-              : "text-white/20"
+              : "text-white/50"
           }
         `}
       >
         {active ? "Open Project →" : "Explore"}
       </div>
+
     </div>
   );
 }
@@ -425,18 +538,14 @@ export default function Portfolio() {
         Active project
       */
 
-      const currentProject =
-        Math.min(
-          projects.length - 1,
-          Math.floor(
-            progress * projects.length
-          )
-        );
+     const currentProject = Math.min(
+  projects.length - 1,
+  Math.floor(progress * projects.length)
+);
 
+setActiveProject(currentProject);
 
-      setActiveProject(
-        currentProject
-      );
+     
     };
 
 
@@ -721,17 +830,18 @@ export default function Portfolio() {
                   HORIZONTAL TRACK
               ========================================== */}
 
-              <div
-                ref={horizontalRef}
-                className="
-                  flex
-                  items-center
-                  gap-[7vw]
-                  px-[8vw]
-                  pt-32
-                  will-change-transform
-                "
-              >
+             <div
+  ref={horizontalRef}
+  className="
+    flex
+    items-center
+    gap-[7vw]
+    px-[8vw]
+    pt-32
+    pr-[15vw]
+    will-change-transform
+  "
+>
 
                 {projects.map(
                   (project, index) => (
@@ -820,12 +930,10 @@ export default function Portfolio() {
                       ================================== */}
 
                       <ProjectVisual
-                        index={index}
-                        active={
-                          activeProject ===
-                          index
-                        }
-                      />
+  project={project}
+  index={index}
+  active={activeProject === index}
+/>
 
 
                       {/* =================================
@@ -1177,9 +1285,10 @@ export default function Portfolio() {
                   {/* Visual */}
 
                   <ProjectVisual
-                    index={index}
-                    active={false}
-                  />
+  project={project}
+  index={index}
+  active={false}
+/>
 
 
                   {/* Content */}
