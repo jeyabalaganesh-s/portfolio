@@ -249,7 +249,7 @@ export default function Hero() {
             uppercase
           "
         >
-          JG
+          JB
           <span className="text-orange-500">
             .
           </span>
