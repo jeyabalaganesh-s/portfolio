@@ -1,1074 +1,938 @@
-import React, { useEffect, useState } from "react";
-import {
-  motion,
-  AnimatePresence,
-  useMotionValue,
-  useSpring,
-  useTransform,
-} from "framer-motion";
-
+import React, { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   FaEnvelope,
   FaGithub,
-  FaLinkedin,
   FaInstagram,
+  FaLinkedin,
   FaTwitter,
 } from "react-icons/fa";
 
-import Hero3D from "./Hero3D";
+/* =========================================================
+   CURSOR-TRACKED CHARACTER
+   Required:
+   public/frames/00.webp ... public/frames/63.webp
+   public/frames/center.webp
+
+   Notes:
+   - Uses only pre-extracted WebP frames.
+   - No runtime MP4 seeking/playback.
+   - No CSS 3D transforms.
+========================================================= */
+
+function CharacterFrameCanvas() {
+  const canvasRef = useRef(null);
+  const framesRef = useRef([]);
+  const centerRef = useRef(null);
+  const rafRef = useRef(null);
+
+  const angleRef = useRef(0);
+  const targetAngleRef = useRef(null);
+  const currentFrameRef = useRef(-1);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d", {
+      alpha: false,
+      desynchronized: true,
+    });
+
+    if (!ctx) return;
+
+    const FRAME_COUNT = 64;
+    const RESPONSE = 0.2;
+    const DEADZONE = 55;
+
+    const SOURCE_W = 1280;
+    const SOURCE_H = 720;
+
+    // Face location inside the original 1280x720 frame.
+    const FACE_X = 0.5;
+    const FACE_Y = 0.3;
+
+    let mounted = true;
+    let resizeObserver = null;
+
+    const frames = Array.from({ length: FRAME_COUNT }, (_, index) => {
+      const image = new Image();
+      image.decoding = "async";
+      image.src = `/frames/${String(index).padStart(2, "0")}.webp`;
+      return image;
+    });
+
+    const centerImage = new Image();
+    centerImage.decoding = "async";
+    centerImage.src = "/frames/center.webp";
+
+    framesRef.current = frames;
+    centerRef.current = centerImage;
+
+    const getCoverMetrics = () => {
+      const rect = canvas.getBoundingClientRect();
+
+      const sourceRatio = SOURCE_W / SOURCE_H;
+      const canvasRatio = rect.width / Math.max(rect.height, 1);
+
+      let width;
+      let height;
+      let x;
+      let y;
+
+      if (canvasRatio > sourceRatio) {
+        width = rect.width;
+        height = width / sourceRatio;
+        x = 0;
+        y = (rect.height - height) / 2;
+      } else {
+        height = rect.height;
+        width = height * sourceRatio;
+        x = (rect.width - width) / 2;
+        y = 0;
+      }
+
+      return { rect, width, height, x, y };
+    };
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = Math.max(1, Math.round(rect.width * dpr));
+      canvas.height = Math.max(1, Math.round(rect.height * dpr));
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+
+      // Redraw the current frame immediately after resize.
+      const current = currentFrameRef.current;
+
+      if (current === -2) {
+        draw(centerRef.current);
+      } else if (current >= 0) {
+        draw(framesRef.current[current]);
+      }
+    };
+
+    const draw = (image) => {
+      if (!image || !image.complete || image.naturalWidth === 0) {
+        return;
+      }
+
+      const { rect, width, height, x, y } = getCoverMetrics();
+
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      ctx.drawImage(image, x, y, width, height);
+    };
+
+    const getTargetAngle = (event) => {
+      const { rect, width, height, x, y } = getCoverMetrics();
+
+      const faceX = rect.left + x + width * FACE_X;
+      const faceY = rect.top + y + height * FACE_Y;
+
+      const dx = event.clientX - faceX;
+      const dy = event.clientY - faceY;
+
+      if (Math.hypot(dx, dy) < DEADZONE) {
+        return null;
+      }
+
+      let angle = Math.atan2(dx, -dy);
+
+      if (angle < 0) {
+        angle += Math.PI * 2;
+      }
+
+      return angle;
+    };
+
+    const handleMouseMove = (event) => {
+      targetAngleRef.current = getTargetAngle(event);
+    };
+
+    const lerpAngle = (current, target, amount) => {
+      let difference = target - current;
+
+      if (difference > Math.PI) {
+        difference -= Math.PI * 2;
+      }
+
+      if (difference < -Math.PI) {
+        difference += Math.PI * 2;
+      }
+
+      return current + difference * amount;
+    };
+
+    const findLoadedFrame = (preferredIndex) => {
+      const images = framesRef.current;
+
+      for (let offset = 0; offset < FRAME_COUNT; offset += 1) {
+        const candidates = [
+          (preferredIndex + offset) % FRAME_COUNT,
+          (preferredIndex - offset + FRAME_COUNT) % FRAME_COUNT,
+        ];
+
+        for (const index of candidates) {
+          const image = images[index];
+
+          if (
+            image?.complete &&
+            image.naturalWidth > 0
+          ) {
+            return { image, index };
+          }
+        }
+      }
+
+      return null;
+    };
+
+    const render = () => {
+      if (!mounted) return;
+
+      const target = targetAngleRef.current;
+
+      if (target === null) {
+        const center = centerRef.current;
+
+        if (
+          center?.complete &&
+          center.naturalWidth > 0 &&
+          currentFrameRef.current !== -2
+        ) {
+          draw(center);
+          currentFrameRef.current = -2;
+        }
+      } else if (target !== undefined) {
+        angleRef.current = lerpAngle(
+          angleRef.current,
+          target,
+          RESPONSE
+        );
+
+        const normalized =
+          ((angleRef.current % (Math.PI * 2)) + Math.PI * 2) %
+          (Math.PI * 2);
+
+        const frameIndex =
+          Math.round(
+            (normalized / (Math.PI * 2)) * FRAME_COUNT
+          ) % FRAME_COUNT;
+
+        const result = findLoadedFrame(frameIndex);
+
+        if (
+          result &&
+          currentFrameRef.current !== result.index
+        ) {
+          draw(result.image);
+          currentFrameRef.current = result.index;
+        }
+      }
+
+      rafRef.current = requestAnimationFrame(render);
+    };
+
+    const start = () => {
+      if (!mounted) return;
+
+      resize();
+
+      const center = centerRef.current;
+
+      if (
+        center?.complete &&
+        center.naturalWidth > 0
+      ) {
+        draw(center);
+        currentFrameRef.current = -2;
+      }
+
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(render);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove, {
+      passive: true,
+    });
+
+    window.addEventListener("resize", resize);
+
+    if (typeof ResizeObserver !== "undefined") {
+      resizeObserver = new ResizeObserver(resize);
+      resizeObserver.observe(canvas);
+    }
+
+    if (centerImage.complete) {
+      start();
+    } else {
+      centerImage.addEventListener("load", start, { once: true });
+    }
+
+    return () => {
+      mounted = false;
+
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("resize", resize);
+
+      resizeObserver?.disconnect();
+
+      centerImage.removeEventListener("load", start);
+
+      cancelAnimationFrame(rafRef.current);
+
+      frames.forEach((image) => {
+        image.onload = null;
+        image.onerror = null;
+        image.src = "";
+      });
+
+      centerImage.onload = null;
+      centerImage.onerror = null;
+      centerImage.src = "";
+
+      framesRef.current = [];
+      centerRef.current = null;
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      aria-label="Interactive cursor-tracked character"
+      className="
+        absolute inset-0
+        w-full h-full
+        block
+        pointer-events-none
+        select-none
+      "
+    />
+  );
+}
+
+/* =========================================================
+   SOCIAL LINKS
+========================================================= */
+
+const socialLinks = [
+  {
+    icon: FaGithub,
+    label: "GitHub",
+    url: "https://github.com/jeyabalaganesh-s",
+  },
+  {
+    icon: FaLinkedin,
+    label: "LinkedIn",
+    url: "https://www.linkedin.com/in/jeyabalaganesh-s/",
+  },
+  {
+    icon: FaInstagram,
+    label: "Instagram",
+    url: "https://www.instagram.com/jeyabalaganesh.s/",
+  },
+  {
+    icon: FaTwitter,
+    label: "X",
+    url: "https://x.com/jeyabalaganesh3",
+  },
+  {
+    icon: FaEnvelope,
+    label: "Email",
+    url: "mailto:jeyabalaganesh2003@gmail.com",
+  },
+];
+
+/* =========================================================
+   HERO
+========================================================= */
 
 export default function Hero() {
   const roles = [
-    "Full-Stack Developer",
-    "SaaS Builder",
-    "AI Systems Developer",
+    "FULL-STACK DEVELOPER",
+    "SAAS BUILDER",
+    "AI SYSTEMS DEVELOPER",
   ];
 
   const [roleIndex, setRoleIndex] = useState(0);
 
-  // =========================================================
-  // ROLE ROTATION
-  // =========================================================
-
   useEffect(() => {
-    const interval = setInterval(() => {
-      setRoleIndex((prev) => (prev + 1) % roles.length);
+    const timer = setInterval(() => {
+      setRoleIndex((previous) => (previous + 1) % roles.length);
     }, 3000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(timer);
   }, [roles.length]);
-
-  // =========================================================
-  // MOUSE INTERACTION
-  // =========================================================
-
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const smoothX = useSpring(mouseX, {
-    stiffness: 120,
-    damping: 20,
-    mass: 0.5,
-  });
-
-  const smoothY = useSpring(mouseY, {
-    stiffness: 120,
-    damping: 20,
-    mass: 0.5,
-  });
-
-  // 3D model subtle parallax
-  const modelX = useTransform(
-    smoothX,
-    [-500, 500],
-    [-12, 12]
-  );
-
-  const modelY = useTransform(
-    smoothY,
-    [-500, 500],
-    [-8, 8]
-  );
-
-  // Name parallax
-  const firstNameX = useTransform(
-    smoothX,
-    [-500, 500],
-    [-4, 4]
-  );
-
-  const lastNameX = useTransform(
-    smoothX,
-    [-500, 500],
-    [4, -4]
-  );
-
-  // Background spotlight
-  const spotlightX = useTransform(
-    smoothX,
-    [-window.innerWidth / 2, window.innerWidth / 2],
-    [-150, 150]
-  );
-
-  const spotlightY = useTransform(
-    smoothY,
-    [-window.innerHeight / 2, window.innerHeight / 2],
-    [-150, 150]
-  );
-
-  const handleMouseMove = (e) => {
-    const x =
-      e.clientX - window.innerWidth / 2;
-
-    const y =
-      e.clientY - window.innerHeight / 2;
-
-    mouseX.set(x);
-    mouseY.set(y);
-  };
-
-  // =========================================================
-  // SOCIAL LINKS
-  // =========================================================
-
-  const links = [
-    {
-      icon: FaGithub,
-      label: "GitHub",
-      url: "https://github.com/jeyabalaganesh-s",
-    },
-    {
-      icon: FaLinkedin,
-      label: "LinkedIn",
-      url: "https://www.linkedin.com/in/jeyabalaganesh-s/",
-    },
-    {
-      icon: FaInstagram,
-      label: "Instagram",
-      url: "https://www.instagram.com/jeyabalaganesh.s/",
-    },
-    {
-      icon: FaTwitter,
-      label: "X",
-      url: "https://x.com/jeyabalaganesh3",
-    },
-    {
-      icon: FaEnvelope,
-      label: "Email",
-      url: "mailto:jeyabalaganesh2003@gmail.com",
-    },
-  ];
 
   return (
     <section
       id="hero"
-      onMouseMove={handleMouseMove}
       className="
         relative
-        min-h-screen
+        min-h-[100svh]
+        h-[100svh]
         overflow-hidden
-        bg-[#080808]
+        bg-[#050505]
         text-white
-        flex
-        items-center
       "
     >
-
       {/* =====================================================
-          BACKGROUND GRID
+          CHARACTER BACKGROUND
+      ====================================================== */}
+
+      <div className="absolute inset-0 z-0">
+        <CharacterFrameCanvas />
+      </div>
+
+     
+      {/* =====================================================
+          JEYA / BALA
       ====================================================== */}
 
       <div
         className="
           absolute
-          inset-0
-          opacity-[0.035]
+          inset-x-0
+          top-[55%]
+          -translate-y-1/2
+          z-[5]
           pointer-events-none
-          bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)]
-          bg-[size:80px_80px]
+          select-none
         "
-      />
+      >
+        <div className="relative w-full">
+
+          {/* JEYA — LEFT */}
+
+          <div
+            className="
+              absolute
+              left-[2vw]
+              sm:left-[4vw]
+              md:left-[4.5vw]
+              lg:left-[4vw]
+              top-0
+              -translate-y-1/2
+              font-black
+              uppercase
+              leading-[0.8]
+              tracking-[-0.09em]
+              whitespace-nowrap
+              text-[15vw]
+              sm:text-[14vw]
+              md:text-[11vw]
+              lg:text-[9vw]
+              text-white
+            "
+          >
+            JEYA
+          </div>
+
+          {/* BALA — RIGHT */}
+
+          <div
+            className="
+              absolute
+              right-[2vw]
+              sm:right-[4vw]
+              md:right-[4.5vw]
+              lg:right-[4vw]
+              top-0
+              -translate-y-1/2
+              font-black
+              uppercase
+              leading-[0.8]
+              tracking-[-0.09em]
+              whitespace-nowrap
+              text-[15vw]
+              sm:text-[14vw]
+              md:text-[11vw]
+              lg:text-[9vw]
+              text-white
+            "
+          >
+            BALA
+          </div>
+
+          {/* Subtle name guide */}
+
+          <div
+            className="
+              absolute
+              left-[4vw]
+              right-[4vw]
+              top-[7vw]
+              sm:top-[6vw]
+              md:top-[4.5vw]
+              lg:top-[3.8vw]
+              h-px
+              bg-white/[0.07]
+            "
+          />
+        </div>
+      </div>
 
       {/* =====================================================
-          MOUSE ORANGE SPOTLIGHT
+          GANESH + ROLE
+          IMPORTANT:
+          These are one centered responsive group.
+          This prevents the mobile role from drifting left.
       ====================================================== */}
 
-      <motion.div
-        style={{
-          x: spotlightX,
-          y: spotlightY,
-        }}
+      <div
         className="
           absolute
           left-1/2
-          top-1/2
-          w-[520px]
-          h-[520px]
+          bottom-[5.5%]
+          sm:bottom-[5%]
+          md:bottom-[4.5%]
+          lg:bottom-[4%]
           -translate-x-1/2
-          -translate-y-1/2
-          rounded-full
-          bg-orange-500/[0.045]
-          blur-[130px]
+          z-[20]
+          w-[94vw]
+          sm:w-auto
+          max-w-full
+          text-center
           pointer-events-none
+          select-none
         "
-      />
+      >
+        {/* GANESH */}
+
+        <div
+          className="
+            font-black
+            uppercase
+            leading-[0.82]
+            tracking-[-0.075em]
+            whitespace-nowrap
+            text-[14vw]
+            sm:text-[13vw]
+            md:text-[10vw]
+            lg:text-[8.5vw]
+            text-transparent
+            [-webkit-text-stroke:1.4px_rgba(255,142,0,0.92)]
+            drop-shadow-[0_0_20px_rgba(255,102,0,0.18)]
+          "
+        >
+          GANESH<span className="text-orange-500/90">.</span>
+        </div>
+
+        {/* Divider */}
+
+        <div
+          className="
+            mt-1.5
+            sm:mt-2
+            flex
+            items-center
+            justify-center
+            gap-2.5
+            sm:gap-3
+          "
+        >
+          <span className="w-8 sm:w-12 md:w-16 h-px bg-orange-500/70" />
+          <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+          <span className="w-8 sm:w-12 md:w-16 h-px bg-orange-500/70" />
+        </div>
+
+        {/* ROLE — ALWAYS CENTERED UNDER GANESH */}
+
+        <div className="mt-2.5 sm:mt-3 min-h-[16px] flex justify-center">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={roles[roleIndex]}
+              initial={{
+                opacity: 0,
+                y: 5,
+                filter: "blur(4px)",
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+              }}
+              exit={{
+                opacity: 0,
+                y: -5,
+                filter: "blur(4px)",
+              }}
+              transition={{ duration: 0.35 }}
+              className="
+                text-[7px]
+                min-[380px]:text-[8px]
+                sm:text-[9px]
+                md:text-[10px]
+                uppercase
+                tracking-[0.24em]
+                sm:tracking-[0.30em]
+                md:tracking-[0.34em]
+                font-semibold
+                text-white/90
+                whitespace-nowrap
+              "
+            >
+              {roles[roleIndex]}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
 
       {/* =====================================================
-          3D MODEL AMBIENT GLOW
+          VIGNETTE
       ====================================================== */}
 
       <div
         className="
-          absolute
-          right-[13%]
-          top-[25%]
-          w-[320px]
-          h-[320px]
-          rounded-full
-          bg-orange-500/[0.035]
-          blur-[120px]
+          absolute inset-0
+          z-[6]
           pointer-events-none
+          bg-[radial-gradient(circle_at_center,transparent_18%,rgba(0,0,0,0.10)_48%,rgba(0,0,0,0.72)_100%)]
         "
       />
 
-      {/* =====================================================
-          TOP NAVIGATION
-      ====================================================== */}
+      <div
+        className="
+          absolute inset-0
+          z-[4]
+          pointer-events-none
+          bg-[linear-gradient(90deg,rgba(0,0,0,0.78)_0%,rgba(0,0,0,0.20)_25%,transparent_42%,transparent_58%,rgba(0,0,0,0.20)_75%,rgba(0,0,0,0.78)_100%)]
+        "
+      />
 
       <div
         className="
           absolute
-          top-0
-          left-0
-          right-0
+          inset-x-0
+          bottom-0
+          h-[48%]
+          z-[6]
+          pointer-events-none
+          bg-gradient-to-t
+          from-black/[0.58]
+          via-black/[0.16]
+          to-transparent
+        "
+      />
+
+      {/* =====================================================
+          NAVIGATION
+      ====================================================== */}
+
+      <header
+        className="
+          absolute
+          top-0 left-0 right-0
           z-30
-          px-6
+          px-5
+          sm:px-7
           md:px-10
-          lg:px-16
-          py-7
+          lg:px-14
+          py-5
+          sm:py-7
           flex
           items-center
           justify-between
         "
       >
-
-        {/* LOGO */}
-
         <motion.a
           href="#hero"
-          whileHover={{
-            scale: 1.05,
-          }}
-          transition={{
-            duration: 0.2,
-          }}
+          whileHover={{ scale: 1.05 }}
           className="
             text-sm
-            font-semibold
-            tracking-[0.25em]
+            font-bold
+            tracking-[0.28em]
             uppercase
           "
         >
-          JB
-          <span className="text-orange-500">
-            .
-          </span>
+          JB<span className="text-orange-500">.</span>
         </motion.a>
 
-
-        {/* NAVIGATION */}
-
-        <nav className="hidden md:flex items-center gap-8">
-
+        <nav className="hidden md:flex items-center gap-9">
           {[
             ["About", "#about"],
             ["Work", "#portfolio"],
             ["Contact", "#contact"],
           ].map(([label, href]) => (
-
             <motion.a
               key={label}
               href={href}
-              whileHover={{
-                y: -2,
-              }}
+              whileHover={{ y: -2 }}
               className="
-                group
-                relative
-                text-xs
+                text-[10px]
                 uppercase
-                tracking-[0.18em]
-                text-neutral-500
+                tracking-[0.25em]
+                text-white/55
                 hover:text-white
                 transition-colors
-                duration-300
               "
             >
               {label}
-
-              <span
-                className="
-                  absolute
-                  -bottom-2
-                  left-0
-                  w-0
-                  h-[1px]
-                  bg-orange-500
-                  transition-all
-                  duration-300
-                  group-hover:w-full
-                "
-              />
-
             </motion.a>
-
           ))}
-
         </nav>
 
-
-        {/* AVAILABLE */}
-
-        <div className="flex items-center gap-2">
-
-          <span
-            className="
-              relative
-              flex
-              h-2
-              w-2
-            "
-          >
-
-            <span
-              className="
-                absolute
-                inline-flex
-                h-full
-                w-full
-                rounded-full
-                bg-orange-500
-                opacity-60
-                animate-ping
-              "
-            />
-
-            <span
-              className="
-                relative
-                inline-flex
-                h-2
-                w-2
-                rounded-full
-                bg-orange-500
-              "
-            />
-
-          </span>
-
-          <span
-            className="
-              text-[10px]
-              uppercase
-              tracking-[0.2em]
-              text-neutral-500
-            "
-          >
-            Available
-          </span>
-
-        </div>
-
-      </div>
-
-
-      {/* =====================================================
-          MAIN CONTENT
-      ====================================================== */}
-
-      <div
-        className="
-          relative
-          z-10
-          w-full
-          max-w-[1600px]
-          mx-auto
-          px-6
-          md:px-10
-          lg:px-16
-          pt-24
-        "
-      >
-
-        <div
+        <a
+          href="#contact"
           className="
-            grid
-            grid-cols-1
-            lg:grid-cols-[1.15fr_0.85fr]
-            min-h-[calc(100vh-100px)]
+            flex
             items-center
+            gap-2
+            text-[9px]
+            uppercase
+            tracking-[0.2em]
+            text-white/60
           "
         >
-
-          {/* =================================================
-              LEFT CONTENT
-          ================================================== */}
-
-          <div
+          <span
             className="
-              relative
-              z-20
-              max-w-4xl
+              w-1.5 h-1.5
+              rounded-full
+              bg-orange-500
+              animate-pulse
+            "
+          />
+          Available
+        </a>
+      </header>
+
+      {/* =====================================================
+          LEFT INFORMATION
+      ====================================================== */}
+
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8, delay: 0.35 }}
+        className="
+          absolute
+          left-5
+          sm:left-8
+          md:left-10
+          lg:left-14
+          top-[28%]
+          sm:top-[29%]
+          z-20
+          w-[190px]
+          min-[380px]:w-[205px]
+          sm:w-[245px]
+        "
+      >
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <span className="w-8 sm:w-10 h-px bg-orange-500 shrink-0" />
+
+          <span
+            className="
+              text-[7px]
+              min-[380px]:text-[8px]
+              sm:text-[9px]
+              uppercase
+              tracking-[0.22em]
+              sm:tracking-[0.28em]
+              text-white/70
+              whitespace-nowrap
             "
           >
-
-            {/* EYEBROW */}
-
-            <motion.div
-              initial={{
-                opacity: 0,
-                y: 20,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              transition={{
-                duration: 0.7,
-                delay: 0.2,
-              }}
-              className="
-                flex
-                items-center
-                gap-4
-                mb-7
-              "
-            >
-
-              <span
-                className="
-                  w-10
-                  h-[1px]
-                  bg-orange-500
-                "
-              />
-
-              <span
-                className="
-                  text-[11px]
-                  uppercase
-                  tracking-[0.35em]
-                  text-neutral-500
-                "
-              >
-                Software Developer
-              </span>
-
-            </motion.div>
-
-
-            {/* =================================================
-                NAME
-            ================================================== */}
-
-            <motion.div
-              initial={{
-                opacity: 0,
-                y: 40,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              transition={{
-                duration: 0.9,
-                delay: 0.35,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-            >
-
-              {/* JEYABALA */}
-
-              <motion.h1
-                style={{
-                  x: firstNameX,
-                }}
-                className="
-                  text-[15vw]
-                  sm:text-[12vw]
-                  lg:text-[8vw]
-                  xl:text-[7.5vw]
-                  font-black
-                  uppercase
-                  leading-[0.82]
-                  tracking-[-0.07em]
-                  whitespace-nowrap
-                  text-white
-                "
-              >
-                JEYABALA
-              </motion.h1>
-
-
-              {/* GANESH */}
-
-              <motion.h1
-                style={{
-                  x: lastNameX,
-                }}
-                className="
-                  text-[15vw]
-                  sm:text-[12vw]
-                  lg:text-[8vw]
-                  xl:text-[7.5vw]
-                  font-black
-                  uppercase
-                  leading-[0.82]
-                  tracking-[-0.07em]
-                  text-transparent
-                  [-webkit-text-stroke:1px_#444]
-                  hover:[-webkit-text-stroke:1px_#ff5a00]
-                  transition-all
-                  duration-500
-                "
-              >
-                GANESH
-
-                <span className="text-orange-500">
-                  .
-                </span>
-
-              </motion.h1>
-
-            </motion.div>
-
-
-            {/* =================================================
-                ROLE
-            ================================================== */}
-
-            <div className="mt-10">
-
-              <AnimatePresence
-                mode="wait"
-              >
-
-                <motion.div
-                  key={roles[roleIndex]}
-                  initial={{
-                    opacity: 0,
-                    y: 20,
-                    filter: "blur(8px)",
-                  }}
-                  animate={{
-                    opacity: 1,
-                    y: 0,
-                    filter: "blur(0px)",
-                  }}
-                  exit={{
-                    opacity: 0,
-                    y: -20,
-                    filter: "blur(8px)",
-                  }}
-                  transition={{
-                    duration: 0.5,
-                  }}
-                  className="
-                    text-xl
-                    sm:text-2xl
-                    lg:text-3xl
-                    font-medium
-                    text-neutral-300
-                  "
-                >
-                  {roles[roleIndex]}
-                </motion.div>
-
-              </AnimatePresence>
-
-            </div>
-
-
-            {/* =================================================
-                DESCRIPTION
-            ================================================== */}
-
-            <motion.p
-              initial={{
-                opacity: 0,
-                y: 20,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              transition={{
-                duration: 0.8,
-                delay: 0.8,
-              }}
-              className="
-                mt-6
-                max-w-xl
-                text-sm
-                sm:text-base
-                leading-7
-                text-neutral-500
-              "
-            >
-              I build scalable SaaS platforms,
-              AI-powered systems and automation-driven
-              digital products with clean architecture
-              and meaningful user experiences.
-            </motion.p>
-
-
-            {/* =================================================
-                BUTTONS
-            ================================================== */}
-
-            <motion.div
-              initial={{
-                opacity: 0,
-                y: 20,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              transition={{
-                duration: 0.8,
-                delay: 1,
-              }}
-              className="
-                mt-9
-                flex
-                flex-wrap
-                items-center
-                gap-4
-              "
-            >
-
-              {/* EXPLORE */}
-
-              <motion.a
-                href="#portfolio"
-                whileHover={{
-                  scale: 1.03,
-                }}
-                whileTap={{
-                  scale: 0.97,
-                }}
-                className="
-                  group
-                  relative
-                  overflow-hidden
-                  flex
-                  items-center
-                  gap-3
-                  px-6
-                  py-3.5
-                  bg-orange-500
-                  text-black
-                  text-xs
-                  font-bold
-                  uppercase
-                  tracking-[0.15em]
-                "
-              >
-
-                <span className="relative z-10">
-                  Explore Work
-                </span>
-
-                <span
-                  className="
-                    relative
-                    z-10
-                    text-lg
-                    transition-transform
-                    duration-300
-                    group-hover:translate-x-1
-                  "
-                >
-                  →
-                </span>
-
-                {/* Hover layer */}
-
-                <span
-                  className="
-                    absolute
-                    inset-0
-                    bg-white
-                    translate-y-full
-                    group-hover:translate-y-0
-                    transition-transform
-                    duration-300
-                  "
-                />
-
-              </motion.a>
-
-
-              {/* LET'S TALK */}
-
-              <motion.a
-                href="#contact"
-                whileHover={{
-                  x: 5,
-                }}
-                className="
-                  flex
-                  items-center
-                  gap-3
-                  px-3
-                  py-3
-                  text-xs
-                  uppercase
-                  tracking-[0.15em]
-                  text-neutral-400
-                  hover:text-white
-                  transition-colors
-                "
-              >
-                Let's Talk
-
-                <span
-                  className="
-                    text-orange-500
-                  "
-                >
-                  ↗
-                </span>
-
-              </motion.a>
-
-            </motion.div>
-
-
-            {/* =================================================
-                SOCIAL ICONS
-            ================================================== */}
-
-            <motion.div
-              initial={{
-                opacity: 0,
-              }}
-              animate={{
-                opacity: 1,
-              }}
-              transition={{
-                delay: 1.3,
-                duration: 0.8,
-              }}
-              className="
-                mt-12
-                flex
-                items-center
-                gap-5
-              "
-            >
-
-              {links.map((link) => {
-
-                const Icon = link.icon;
-
-                return (
-                  <motion.a
-                    key={link.label}
-                    href={link.url}
-                    target={
-                      link.url.startsWith("http")
-                        ? "_blank"
-                        : undefined
-                    }
-                    rel={
-                      link.url.startsWith("http")
-                        ? "noopener noreferrer"
-                        : undefined
-                    }
-                    whileHover={{
-                      y: -4,
-                      color: "#ff5a00",
-                    }}
-                    transition={{
-                      duration: 0.2,
-                    }}
-                    className="
-                      text-neutral-600
-                      text-lg
-                    "
-                    aria-label={link.label}
-                  >
-                    <Icon />
-                  </motion.a>
-                );
-
-              })}
-
-            </motion.div>
-
-          </div>
-
-
-          {/* =================================================
-              RIGHT / 3D
-          ================================================== */}
-
-          <div
-            className="
-              relative
-              hidden
-              lg:flex
-              h-[700px]
-              items-center
-              justify-center
-            "
-          >
-
-            {/* OUTER CIRCLE */}
-
-            <motion.div
-              style={{
-                rotate: useTransform(
-                  smoothX,
-                  [-500, 500],
-                  [-4, 4]
-                ),
-              }}
-              className="
-                absolute
-                w-[480px]
-                h-[480px]
-                rounded-full
-                border
-                border-white/[0.07]
-              "
-            />
-
-
-            {/* INNER CIRCLE */}
-
-            <motion.div
-              style={{
-                scale: useTransform(
-                  smoothX,
-                  [-500, 500],
-                  [0.98, 1.02]
-                ),
-              }}
-              className="
-                absolute
-                w-[350px]
-                h-[350px]
-                rounded-full
-                border
-                border-orange-500/[0.12]
-              "
-            />
-
-
-            {/* ROTATING ORANGE RING */}
-
-            <motion.div
-              animate={{
-                rotate: 360,
-              }}
-              transition={{
-                duration: 25,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-              className="
-                absolute
-                w-[500px]
-                h-[500px]
-                rounded-full
-                border-t
-                border-orange-500/40
-              "
-            />
-
-
-            {/* SMALL ORANGE ORBIT DOT */}
-
-            <motion.div
-              animate={{
-                rotate: 360,
-              }}
-              transition={{
-                duration: 12,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-              className="
-                absolute
-                w-[500px]
-                h-[500px]
-                rounded-full
-              "
-            >
-
-              <span
-                className="
-                  absolute
-                  top-0
-                  left-1/2
-                  -translate-x-1/2
-                  w-2
-                  h-2
-                  rounded-full
-                  bg-orange-500
-                  shadow-[0_0_20px_rgba(255,90,0,0.6)]
-                "
-              />
-
-            </motion.div>
-
-
-            {/* =================================================
-                3D MODEL
-            ================================================== */}
-
-            <motion.div
-              style={{
-                x: modelX,
-                y: modelY,
-              }}
-              className="
-                relative
-                z-10
-                w-[600px]
-                h-[700px]
-              "
-            >
-              <Hero3D />
-            </motion.div>
-
-
-            {/* =================================================
-                RIGHT FLOATING LABEL
-            ================================================== */}
-
-            <motion.div
-              initial={{
-                opacity: 0,
-                x: 30,
-              }}
-              animate={{
-                opacity: 1,
-                x: 0,
-              }}
-              transition={{
-                delay: 1.2,
-                duration: 0.8,
-              }}
-              className="
-                absolute
-                right-0
-                top-[25%]
-                z-20
-                flex
-                items-center
-                gap-3
-                text-[10px]
-                uppercase
-                tracking-[0.2em]
-                text-neutral-600
-              "
-            >
-
-              <span
-                className="
-                  w-8
-                  h-[1px]
-                  bg-neutral-700
-                "
-              />
-
-              Building digital products
-
-            </motion.div>
-
-
-            {/* =================================================
-                BOTTOM FLOATING LABEL
-            ================================================== */}
-
-            <motion.div
-              initial={{
-                opacity: 0,
-                x: -30,
-              }}
-              animate={{
-                opacity: 1,
-                x: 0,
-              }}
-              transition={{
-                delay: 1.4,
-                duration: 0.8,
-              }}
-              className="
-                absolute
-                left-0
-                bottom-[20%]
-                z-20
-                flex
-                items-center
-                gap-3
-                text-[10px]
-                uppercase
-                tracking-[0.2em]
-                text-neutral-600
-              "
-            >
-
-              Code
-
-              <span
-                className="
-                  w-8
-                  h-[1px]
-                  bg-neutral-700
-                "
-              />
-
-              Create
-
-            </motion.div>
-
-          </div>
-
+            Software Developer
+          </span>
         </div>
 
-      </div>
+        <p
+          className="
+            mt-4
+            sm:mt-5
+            text-[10px]
+            min-[380px]:text-[11px]
+            sm:text-xs
+            md:text-sm
+            leading-5
+            sm:leading-6
+            text-white/60
+          "
+        >
+          Building scalable software, SaaS
+          products and AI-powered systems.
+        </p>
+      </motion.div>
 
+      {/* =====================================================
+          RIGHT WORK INFORMATION
+      ====================================================== */}
+
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8, delay: 0.45 }}
+        className="
+          absolute
+          right-4
+          sm:right-8
+          md:right-10
+          lg:right-14
+          top-[27.5%]
+          sm:top-[28%]
+          z-20
+          text-right
+          pr-3
+          sm:pr-4
+          border-r
+          border-white/25
+        "
+      >
+        <div
+          className="
+            text-[7px]
+            min-[380px]:text-[8px]
+            sm:text-[9px]
+            uppercase
+            tracking-[0.22em]
+            sm:tracking-[0.3em]
+            text-white/50
+          "
+        >
+          Based in India
+        </div>
+
+        <a
+          href="#portfolio"
+          className="
+            mt-4
+            sm:mt-5
+            inline-flex
+            items-center
+            gap-2
+            sm:gap-3
+            text-[8px]
+            sm:text-[10px]
+            uppercase
+            tracking-[0.15em]
+            sm:tracking-[0.2em]
+            font-medium
+            text-white
+            hover:text-orange-500
+            transition-colors
+          "
+        >
+          Explore Work
+          <span className="text-orange-500 text-xs sm:text-sm">
+            ↗
+          </span>
+        </a>
+      </motion.div>
+
+      {/* =====================================================
+          SOCIAL LINKS
+      ====================================================== */}
+
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.15 }}
+        className="
+          absolute
+          left-5
+          sm:left-8
+          md:left-10
+          lg:left-14
+          bottom-4
+          sm:bottom-6
+          z-30
+          flex
+          items-center
+          gap-3
+          sm:gap-4
+        "
+      >
+        {socialLinks.map((link) => {
+          const Icon = link.icon;
+
+          return (
+            <motion.a
+              key={link.label}
+              href={link.url}
+              target={
+                link.url.startsWith("http")
+                  ? "_blank"
+                  : undefined
+              }
+              rel={
+                link.url.startsWith("http")
+                  ? "noopener noreferrer"
+                  : undefined
+              }
+              whileHover={{
+                y: -3,
+                scale: 1.08,
+              }}
+              className="
+                text-white/45
+                hover:text-orange-500
+                transition-colors
+              "
+              aria-label={link.label}
+            >
+              <Icon
+                size={14}
+                className="sm:w-[15px] sm:h-[15px]"
+              />
+            </motion.a>
+          );
+        })}
+      </motion.div>
 
       {/* =====================================================
           SCROLL INDICATOR
       ====================================================== */}
 
-      <motion.div
-        initial={{
-          opacity: 0,
-        }}
-        animate={{
-          opacity: 1,
-        }}
-        transition={{
-          delay: 1.8,
-        }}
+      <div
         className="
           absolute
-          bottom-7
-          left-6
-          md:left-10
-          lg:left-16
-          z-20
+          right-4
+          sm:right-8
+          md:right-10
+          lg:right-14
+          bottom-4
+          sm:bottom-6
+          z-30
           flex
           items-center
-          gap-4
+          gap-2
+          sm:gap-4
         "
       >
+        <span
+          className="
+            hidden
+            sm:block
+            text-[9px]
+            uppercase
+            tracking-[0.3em]
+            text-white/35
+          "
+        >
+          Scroll to explore
+        </span>
 
         <div
           className="
-            relative
             w-5
             h-8
             border
-            border-neutral-700
+            border-white/25
             rounded-full
             flex
             justify-center
             pt-1.5
           "
         >
-
           <motion.span
             animate={{
               y: [0, 8, 0],
-              opacity: [1, 0.3, 1],
+              opacity: [1, 0.25, 1],
             }}
             transition={{
               duration: 1.5,
@@ -1081,45 +945,26 @@ export default function Hero() {
               rounded-full
             "
           />
-
         </div>
-
 
         <span
           className="
-            hidden
-            sm:block
-            text-[9px]
-            uppercase
-            tracking-[0.3em]
-            text-neutral-600
+            text-[8px]
+            sm:text-[9px]
+            tracking-[0.15em]
+            sm:tracking-[0.2em]
+            text-white/40
           "
         >
-          Scroll to explore
+          01 / 05
         </span>
-
-      </motion.div>
-
-
-      {/* =====================================================
-          PAGE NUMBER
-      ====================================================== */}
-
-      <div
-        className="
-          absolute
-          bottom-8
-          right-6
-          md:right-10
-          lg:right-16
-          text-[10px]
-          tracking-[0.2em]
-          text-neutral-700
-        "
-      >
-        01 / 05
       </div>
 
+      {/* =====================================================
+          TOP CENTER ACCENT
+      ====================================================== */}
+
+    
     </section>
   );
 }
