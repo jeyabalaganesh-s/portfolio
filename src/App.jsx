@@ -10,6 +10,7 @@ import Education from "./pages/Education";
 import About from "./pages/About";
 import Footer from './pages/Footer';
 import LoadingScreen from "./pages/LoadingScreen";
+import CodingProfilesSection from "./pages/CodingProfilesSection";
 
 import "./styles/global.css";
 
@@ -31,6 +32,7 @@ export default function App() {
         <Education />
         <CertificatesSection />
         <PublicationsSection />
+        <CodingProfilesSection />
         <ContactSection />
         <Footer />
       </main>
