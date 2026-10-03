@@ -8,6 +8,7 @@ import CertificatesSection from "./pages/CertificatesSection";
 import PublicationsSection from "./pages/PublicationsSection";
 import Education from "./pages/Education";
 import About from "./pages/About";
+import Navbar from "./pages/Navbar";
 import Footer from './pages/Footer';
 import LoadingScreen from "./pages/LoadingScreen";
 import CodingProfilesSection from "./pages/CodingProfilesSection";
@@ -23,6 +24,7 @@ export default function App() {
 
   return (
     <div className="bg-black text-white min-h-screen flex flex-col">
+      <Navbar />
       <main className="flex-grow">
         <Hero />
         <About />

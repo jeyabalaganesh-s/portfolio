@@ -17,7 +17,13 @@ export default function TopNavBar() {
 
   const handleScroll = (id) => {
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+
+    if (el) {
+      el.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
   };
 
   useEffect(() => {
@@ -26,8 +32,10 @@ export default function TopNavBar() {
 
       items.forEach((item) => {
         const el = document.getElementById(item.id);
+
         if (el) {
           const rect = el.getBoundingClientRect();
+
           if (rect.top <= 200 && rect.bottom >= 200) {
             current = item.id;
           }
@@ -37,124 +45,349 @@ export default function TopNavBar() {
       setActiveSection(current);
     };
 
+    handleActive();
+
     window.addEventListener("scroll", handleActive);
-    return () => window.removeEventListener("scroll", handleActive);
+
+    return () => {
+      window.removeEventListener("scroll", handleActive);
+    };
   }, []);
 
   return (
     <>
-      {/* SIDE DOT NAV */}
-      <div className="hidden lg:flex fixed right-10 top-1/2 -translate-y-1/2 z-50 flex-col gap-8">
+      {/* =====================================================
+          TOP NAVBAR
+      ====================================================== */}
 
-        {items.map((item) => (
-          <motion.div
-            key={item.id}
-            onClick={() => handleScroll(item.id)}
-            whileHover={{ scale: 1.3 }}
-            className="group relative cursor-pointer"
+      <header className="fixed top-0 left-0 right-0 z-50 px-5 sm:px-8 md:px-12 lg:px-16 pt-5">
+        <div
+          className="
+            mx-auto max-w-[95vw]
+            flex items-center justify-between
+            px-5 py-4
+            bg-transparent
+            backdrop-blur-xl
+            border border-white/10
+            rounded-xl
+          "
+        >
+          {/* LOGO */}
+          <motion.button
+            onClick={() => handleScroll("about")}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="
+              text-xl sm:text-2xl
+              font-bold
+              tracking-tight
+              text-white
+              cursor-pointer
+            "
           >
-            <div
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                activeSection === item.id
-                  ? "bg-orange-500 shadow-[0_0_12px_rgba(249,115,22,0.8)] scale-125"
-                  : "bg-white/30"
-              }`}
-            />
+            JB<span className="text-orange-500">.</span>
+          </motion.button>
 
-            {/* Tooltip */}
-            <span
-              className="absolute right-7 top-1/2 -translate-y-1/2 
-              opacity-0 group-hover:opacity-100 
-              transition-all duration-300 
-              text-xs tracking-widest text-white/80 
-              bg-black px-3 py-1 rounded-md border border-white/10"
+          {/* DESKTOP NAVIGATION */}
+          <nav className="hidden md:flex items-center gap-8 lg:gap-10">
+            {items.map((item) => (
+              <motion.button
+                key={item.id}
+                onClick={() => handleScroll(item.id)}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className={`
+                  relative
+                  text-[11px]
+                  lg:text-xs
+                  uppercase
+                  tracking-[0.2em]
+                  transition-colors
+                  duration-300
+                  ${
+                    activeSection === item.id
+                      ? "text-orange-500"
+                      : "text-white/60 hover:text-white"
+                  }
+                `}
+              >
+                {item.label}
+
+                {/* ACTIVE UNDERLINE */}
+                <span
+                  className={`
+                    absolute
+                    -bottom-2
+                    left-0
+                    h-[1px]
+                    bg-orange-500
+                    transition-all
+                    duration-300
+                    ${
+                      activeSection === item.id
+                        ? "w-full"
+                        : "w-0"
+                    }
+                  `}
+                />
+              </motion.button>
+            ))}
+          </nav>
+
+          {/* AVAILABLE + RESUME */}
+          <div className="flex items-center gap-3 sm:gap-5">
+            {/* AVAILABLE */}
+            <motion.button
+              onClick={() => handleScroll("contact")}
+              whileHover={{ scale: 1.03 }}
+              className="
+                hidden sm:flex
+                items-center
+                gap-2
+                text-[10px]
+                uppercase
+                tracking-[0.18em]
+                text-white/70
+                hover:text-white
+                transition-colors
+              "
             >
-              {item.label}
-            </span>
-          </motion.div>
-        ))}
-      </div>
+              <span className="relative flex h-2 w-2">
+                <span
+                  className="
+                    absolute
+                    inline-flex
+                    h-full
+                    w-full
+                    rounded-full
+                    bg-orange-500
+                    opacity-60
+                    animate-ping
+                  "
+                />
 
-      {/* FLOATING RESUME BUTTON */}
-     {/* ================= RESUME BUTTON ================= */}
+                <span
+                  className="
+                    relative
+                    inline-flex
+                    h-2
+                    w-2
+                    rounded-full
+                    bg-orange-500
+                  "
+                />
+              </span>
 
-{/* Desktop → Vertical */}
-<motion.button
-  onClick={() => setShowResumeModal(true)}
-  whileHover={{ x: -6 }}
-  whileTap={{ scale: 0.95 }}
-  className="hidden lg:flex fixed right-10 bottom-[10vh] -translate-y-1/2 z-50 
-  flex-row items-center gap-3 px-4 py-6 
-  hover:border-orange-500/50 
-  text-white transition-all duration-300 rounded-l-lg"
->
-  <FaDownload className="text-orange-500 text-lg" />
-  <span className="tracking-widest text-xs">
-    RESUME
-  </span>
-</motion.button>
+              Available
+            </motion.button>
 
-{/* Mobile → Horizontal Bottom */}
-<motion.button
-  onClick={() => setShowResumeModal(true)}
- 
+            {/* RESUME */}
+            <motion.button
+              onClick={() => setShowResumeModal(true)}
+              whileHover={{
+                scale: 1.03,
+                borderColor: "rgba(249,115,22,0.7)",
+              }}
+              whileTap={{ scale: 0.95 }}
+              className="
+                flex
+                items-center
+                gap-2
+                px-3
+                sm:px-4
+                py-2
+                border
+                border-white/10
+                rounded-md
+                text-[10px]
+                uppercase
+                tracking-[0.18em]
+                text-white/80
+                hover:text-white
+                transition-all
+                duration-300
+              "
+            >
+              <FaDownload className="text-orange-500" />
+              <span className="hidden sm:inline">
+                Resume
+              </span>
+            </motion.button>
+          </div>
+        </div>
+      </header>
 
-  className="lg:hidden fixed bottom-12 right-0 z-50 
-  flex items-center gap-3 px-2 py-3 rotate-90
-  text-white rounded-full shadow-lg transition-all duration-300"
->
-  <FaDownload />
-  <span className="text-sm">
-   Resume
-  </span>
-</motion.button>
+      
+      {/* =====================================================
+          RESUME MODAL
+      ====================================================== */}
 
-      {/* RESUME MODAL */}
       <AnimatePresence>
         {showResumeModal && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-6"
+            className="
+              fixed
+              inset-0
+              bg-black/85
+              backdrop-blur-xl
+              z-[100]
+              flex
+              items-center
+              justify-center
+              p-4
+              sm:p-6
+            "
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="relative w-full max-w-5xl h-[85vh] bg-black rounded-xl shadow-2xl overflow-hidden border border-white/10"
+              initial={{
+                scale: 0.94,
+                opacity: 0,
+                y: 20,
+              }}
+              animate={{
+                scale: 1,
+                opacity: 1,
+                y: 0,
+              }}
+              exit={{
+                scale: 0.94,
+                opacity: 0,
+                y: 20,
+              }}
+              transition={{
+                duration: 0.3,
+                ease: "easeOut",
+              }}
+              className="
+                relative
+                w-full
+                max-w-5xl
+                h-[88vh]
+                bg-black
+                rounded-xl
+                overflow-hidden
+                border
+                border-white/10
+                shadow-[0_0_60px_rgba(0,0,0,0.8)]
+              "
             >
-              {/* Close */}
-              <button
-                onClick={() => setShowResumeModal(false)}
-                className="absolute top-5 right-5 text-white/60 hover:text-orange-500 z-10"
+              {/* TOP BAR */}
+              <div
+                className="
+                  absolute
+                  top-0
+                  left-0
+                  right-0
+                  z-10
+                  flex
+                  items-center
+                  justify-between
+                  px-4
+                  sm:px-5
+                  py-4
+                  bg-black/80
+                  backdrop-blur-md
+                  border-b
+                  border-white/10
+                "
               >
-                <FaTimes size={18} />
-              </button>
+                {/* DOWNLOAD */}
+                <a
+                  href="/resume.pdf"
+                  download
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                    text-[10px]
+                    uppercase
+                    tracking-[0.18em]
+                    bg-orange-500
+                    hover:bg-orange-600
+                    px-4
+                    py-2
+                    rounded-md
+                    text-white
+                    transition-all
+                    duration-300
+                  "
+                >
+                  <FaDownload />
+                  DOWNLOAD
+                </a>
 
-              {/* Download */}
-              <a
-                href="/resume.pdf"
-                download
-                className="absolute top-5 left-5 flex items-center gap-2 text-xs tracking-widest 
-                bg-orange-500 hover:bg-orange-600 
-                px-4 py-2 rounded-md text-white transition"
-              >
-                <FaDownload />
-                DOWNLOAD
-              </a>
+                {/* CLOSE */}
+                <motion.button
+                  onClick={() => setShowResumeModal(false)}
+                  whileHover={{
+                    rotate: 90,
+                    color: "#f97316",
+                  }}
+                  whileTap={{ scale: 0.9 }}
+                  className="
+                    text-white/50
+                    transition-colors
+                  "
+                  aria-label="Close resume"
+                >
+                  <FaTimes size={18} />
+                </motion.button>
+              </div>
 
-              {/* PDF Preview */}
+              {/* PDF */}
               <iframe
                 src="/resume.pdf"
                 title="Resume"
-                className="w-full h-full"
+                className="w-full h-full pt-[58px]"
               />
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* =====================================================
+          MOBILE RESUME BUTTON
+      ====================================================== */}
+
+      <motion.button
+        onClick={() => setShowResumeModal(true)}
+        whileTap={{ scale: 0.95 }}
+        className="
+          md:hidden
+          fixed
+          bottom-8
+          right-0
+          z-50
+          flex
+          items-center
+          gap-2
+          px-4
+          py-3
+          bg-black/80
+          backdrop-blur-xl
+          border
+          border-white/10
+          border-r-0
+          rounded-l-lg
+          text-white
+          shadow-[0_0_25px_rgba(0,0,0,0.5)]
+        "
+      >
+        <FaDownload className="text-orange-500 text-sm" />
+
+        <span
+          className="
+            text-[10px]
+            uppercase
+            tracking-[0.18em]
+          "
+        >
+          Resume
+        </span>
+      </motion.button>
     </>
   );
 }

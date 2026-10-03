@@ -10,6 +10,7 @@ const projects = [
     {
     title: "CRM",
     image: "/images/projects/crm.png",
+    link: "https://crm.jeyabalaganesh.site",
     desc: "AI-First Healthcare CRM Platform",
     category: "Healthcare / SaaS / AI",
     preview:
@@ -45,6 +46,7 @@ Centralizes healthcare business operations into a scalable SaaS platform while r
 
   {
     title: "JEMI",
+    link: "https://jemi.jeyabalaganesh.site",
     image: "/images/projects/jemi.png",
     desc: "AI-Powered Lead Qualification Agent",
     category: "AI / Agents / CRM",
@@ -82,6 +84,7 @@ Automates repetitive lead qualification workflows and helps sales teams focus th
 
   {
     title: "Event OS",
+    link: "https://event-os.jeyabalaganesh.site",
     image: "/images/projects/event-os.png",
     desc: "Complete Event Monitoring & Management Platform",
     category: "Event Tech / SaaS",
@@ -119,6 +122,7 @@ Provides a centralized command center for event teams to coordinate operations, 
   },
   {
     title: "Websence AI",
+    link: "https://websenseai.jeyabalaganesh.site",
     image: "/images/projects/websenseai.png",
     desc: "Opinion Mining + Generative AI Platform",
     category: "AI / NLP",
@@ -149,6 +153,7 @@ Automates large-scale text analysis and enhances decision-making using AI.
 
   {
     title: "Token Management Portal",
+    link: "https://token.jeyabalaganesh.site",
     desc: "Healthcare Queue & Appointment System",
     image: "/images/projects/token.png",
     category: "Healthcare / SaaS",
@@ -178,6 +183,7 @@ Enhances operational efficiency and reduces manual scheduling overhead.
 
   {
     title: "Lone Wolf",
+    link: "https://lonewolf.jeyabalaganesh.site",
     desc: "Full-stack E-commerce Platform",
     category: "E-commerce",
     image: "/images/projects/lonewolf.png",
@@ -208,6 +214,7 @@ Delivered a functional online retail platform with scalable backend logic.
 
   {
     title: "Blismera Shop",
+    link: "https://blismera.jeyabalaganesh.site",
     desc: "Custom Jewelry E-commerce Platform",
     image: "/images/projects/blismera.png",
     category: "E-commerce / UI",
@@ -236,6 +243,7 @@ Provides a modern and visually engaging online shopping experience.
 
   {
     title: "DiGi School Portal",
+    link: "https://digi-school.jeyabalaganesh.site",
     desc: "School Management SaaS Platform",
     image: "/images/projects/digi-school.png",
     category: "Education / SaaS",
@@ -272,7 +280,7 @@ Improves operational efficiency for educational institutions.
 
 function ProjectVisual({ project, index, active }) {
   return (
-    <div className="relative w-full h-[250px] xl:h-[300px] overflow-hidden border border-white/[0.08] bg-[#0b0b0b] group">
+    <div id="projects" className="relative w-full h-[250px] xl:h-[300px] overflow-hidden border border-white/[0.08] bg-[#0b0b0b] group">
 
       {/* Project Image */}
       <motion.img
@@ -701,9 +709,11 @@ setActiveProject(currentProject);
           }}
           className="
             absolute
-            top-0px
-            left-12
+            top-24
+            left-0
             right-0
+            md:left-12
+            md:top-5
             z-30
             px-6
             md:px-10
@@ -713,7 +723,7 @@ setActiveProject(currentProject);
           "
         >
 
-          <div className="max-w-[1500px] mx-auto">
+          <div className="max-w-[1500px] relative mb-16 top-10 mx-auto">
 
             {/* Small label */}
 
@@ -796,12 +806,13 @@ setActiveProject(currentProject);
           </div>
         </motion.div>
 
-
+        <div className="absolute top-10 left-0 w-full h-40"></div>
         {/* =================================================
             DESKTOP HORIZONTAL EXPERIENCE
         ================================================= */}
 
         {!isMobile && (
+          
           <div
             className="
               sticky
@@ -992,33 +1003,45 @@ setActiveProject(currentProject);
 
                           {/* Arrow */}
 
-                          <motion.div
-                            animate={
-                              activeProject ===
-                              index
-                                ? {
-                                    x: 6,
-                                    y: -6,
-                                  }
-                                : {
-                                    x: 0,
-                                    y: 0,
-                                  }
-                            }
-                            transition={{
-                              duration: 0.25,
-                            }}
-                            className="
-                              flex-shrink-0
-                              text-2xl
-                              text-white/20
-                              group-hover:text-orange-500
-                              transition-colors
-                            "
-                          >
-                            ↗
-                          </motion.div>
+                          {/* PROJECT LINK */}
 
+{project.link && (
+  <motion.a
+    href={project.link}
+    target="_blank"
+    rel="noopener noreferrer"
+    onClick={(e) => e.stopPropagation()}
+    whileHover={{ x: 4, y: -4 }}
+    whileTap={{ scale: 0.95 }}
+    className="
+      flex-shrink-0
+      flex
+      items-center
+      gap-2
+      px-3
+      py-2
+      border
+      border-white/10
+      text-white/40
+      hover:text-orange-500
+      hover:border-orange-500/40
+      transition-all
+      duration-300
+    "
+  >
+    <span className="
+      text-[9px]
+      uppercase
+      tracking-[0.2em]
+    ">
+      Live
+    </span>
+
+    <span className="text-lg">
+      ↗
+    </span>
+  </motion.a>
+)}
                         </div>
 
 
@@ -1206,7 +1229,7 @@ setActiveProject(currentProject);
             className="
               px-6
               pt-[380px]
-              pb-24
+              pb-0
               space-y-16
             "
           >
